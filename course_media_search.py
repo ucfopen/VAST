@@ -638,7 +638,7 @@ for key in youtube_link:
 								youtube_link[key].insert(3, sec[:-1])
 							else:
 								youtube_link[key].insert(1, '0')
-								youtube_link[key].insert(2, min)
+								youtube_link[key].insert(2, min[2:])
 								youtube_link[key].insert(3, sec[:-1])
 			except KeyError:
 				youtube_link[key].insert(0, "Unable to Check Youtube Video")
