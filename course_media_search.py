@@ -83,9 +83,10 @@ if pages:
 						file_id = location.split('/')[-1:]
 						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 						data_file = r.json()
+						print data_file
 						file_location = data_file['url'].split('?')[0]
-						type = data_file['content-type']
-						if "audio" in type[:5]:
+						type = data_file['mime_class']
+						if "audio" in type:
 							link_name = "Linked Audio File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -94,7 +95,7 @@ if pages:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(page_location)
 							link_media[link_name].append(file_location)
-						if "video" in type[:5]:
+						if "video" in type:
 							link_name = "Linked Video File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -181,8 +182,8 @@ if assign:
 						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 						data_file = r.json()
 						file_location = data_file['url'].split('?')[0]
-						type = data_file['content-type']
-						if "audio" in type[:5]:
+						type = data_file['mime_class']
+						if "audio" in type:
 							link_name = "Linked Audio File: %s" % data_file['filename'], data_file['url']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -191,7 +192,7 @@ if assign:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(assign_location)
 							link_media[link_name].append(file_location)
-						if "video" in type[:5]:
+						if "video" in type:
 							link_name = "Linked Video File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							media_link[m_link].append("Manually Check for Captions")
@@ -275,7 +276,7 @@ if discuss:
 						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 						data_file = r.json()
 						file_location = data_file['url'].split('?')[0]
-						if "audio" in type[:5]:
+						if "audio" in type:
 							link_name = "Linked Audio File: %s" %data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -284,7 +285,7 @@ if discuss:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(discuss_location)
 							link_media[link_name].append(file_location)
-						if "video" in type[:5]:
+						if "video" in type:
 							link_name = "Linked Video File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -368,8 +369,8 @@ if syllabus.syllabus_body:
 				r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 				data_file = r.json()
 				file_location = data_file['url'].split('?')[0]
-				type = data_file['content-type']
-				if "audio" in type[:5]:
+				type = data_file['mime_class']
+				if "audio" in type:
 					link_name = "Linked Audio File: %s" % data_file['filename']
 					link_media.setdefault(link_name, [])
 					link_media[link_name].append(" ")
@@ -378,7 +379,7 @@ if syllabus.syllabus_body:
 					link_media[link_name].append(syllabus_location)
 					link_media[link_name].append(file_location)
 
-				if "video" in type[:5]:
+				if "video" in type:
 					link_name = "Linked Video File: %s" % data_file['filename']
 					link_media.setdefault(link_name, [])
 					link_media[link_name].append("Manually Check for Captions")
@@ -426,8 +427,8 @@ if modules:
 					file_id = item.content_id
 					r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 					data_file = r.json()
-					type = data_file['content-type']
-					if "audio" in type[:5]:
+					type = data_file['mime_class']
+					if "audio" in type:
 						link_name = "Linked Audio File: %s" % data_file['filename']
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
@@ -436,7 +437,7 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(module_location)
 						link_media[link_name].append(file_location)
-					if "video" in type[:5]:
+					if "video" in type:
 						link_name = "Linked Video File: %s" % data_file['filename']
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
@@ -524,8 +525,8 @@ if announce:
 						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 						data_file = r.json()
 						file_location = data_file['url'].split('?')[0]
-						type = data_file['content-type']
-						if "audio" in type[:5]:
+						type = data_file['mime_class']
+						if "audio" in type:
 							link_name = "Linked Audio File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -534,7 +535,7 @@ if announce:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(announce_location)
 							link_media[link_name].append(file_location)
-						if "video" in type[:5]:
+						if "video" in type:
 							link_name = "Linked Video File: %s" %data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
