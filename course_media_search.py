@@ -83,7 +83,6 @@ if pages:
 						file_id = location.split('/')[-1:]
 						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 						data_file = r.json()
-						print data_file
 						file_location = data_file['url'].split('?')[0]
 						type = data_file['mime_class']
 						if "audio" in type:
