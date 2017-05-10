@@ -6,20 +6,18 @@ import time
 import re
 from bs4 import BeautifulSoup 
 from collections import OrderedDict
-from config import *  
+from config_course_media_search_canvasapi import *  
 start_time = time.time()
 course_id= raw_input('Canvas ID')
 canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
-print course
 print "Checking " + course.name
 writer = csv.writer(open('%s.csv' % course.name, 'wb'))
 youtube_link = {}
 vimeo_link = {}
 media_link = {}
 link_media = {}
-	#for id in course_id_list:
-	# Uses List Page API to retrieve all pages in the course
+#checks all pages in a canvas course for media links
 pages = course.get_pages()
 if pages:
 	print "Checking Pages"
@@ -117,7 +115,7 @@ if pages:
 					except KeyError:
 						pass
 
-#search assignments
+#checks all assignments in a canvas course for media links
 assign = course.get_assignments()
 if assign:
 	print "Checking Assignments"
@@ -213,7 +211,7 @@ if assign:
 							link_media[link_name].append(file_location)
 					except KeyError:
 						pass
-	#search discussions
+#checks all discuss in a canvas course for media links
 discuss = course.get_discussion_topics()
 if discuss:
 	print "Checking Discussions"
@@ -306,14 +304,13 @@ if discuss:
 							link_media[link_name].append(file_location)
 					except KeyError:
 						pass
-	#search syllabus
+#checks the syllabus in a canvas course for media links
 syllabus = canvas.get_course(course_id, include='syllabus_body')
 if syllabus.syllabus_body:
-	syllabus_location = 'https://webcourses.ucf.edu/courses/%s/assignments/syllabus'% course_id
+	syllabus_location = '%s/%s/assignments/syllabus' %(courses_url, course_id)
 	print "Checking Syllabus"
 	try:
 		contents = syllabus.syllabus_body
-#HTML parsers. Looks for all hrefs in a page and creates a list 
 		soup = BeautifulSoup (contents, "html.parser")
 		list = []
 		for link in soup.find_all('a'):
@@ -401,16 +398,17 @@ if syllabus.syllabus_body:
 					link_media[link_name].append(file_location)
 	except KeyError:
 		pass
-	#search module urls
+#checks all module external URLs and Files in a canvas course for media links
 modules = course.get_modules()
 if modules:
 	print "Checking Modules"
 	for module in modules:
-		items = module.list_module_items()
+		items = module.list_module_items(include='content_details')
 		for item in items:
 			youtube_embed = []
 			vimeo_embed = []
 			if item.type == 'ExternalUrl':
+				module_url = '%s/%s/modules/items/%s' %(courses_url, course_id, item.id)
 				href = item.external_url.encode('utf8')
 				if "youtube" in href or "youtu.be" in href:
 					youtube_embed.append(href)
@@ -418,14 +416,15 @@ if modules:
 					vimeo_embed.append(href)
 			for y_link in youtube_embed:
 				youtube_link.setdefault(y_link, []) 
-				youtube_link[y_link].append(item.html_url)
+				youtube_link[y_link].append(module_url)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, [])
-				vimeo_link[v_link].append(item.html_url)
+				vimeo_link[v_link].append(module_url)
 			if item.type == "File":
 				try:
-					file_id = item.html_url.split('/')[-1:]
-					r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
+					module_location = item.html_url
+					file_id = item.content_id
+					r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
 					data_file = r.json()
 					type = data_file['content-type']
 					if "audio" in type[:5]:
@@ -435,7 +434,8 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
-						link_media[link_name].append(data['name'])
+						link_media[link_name].append(module_location)
+						link_media[link_name].append(file_location)
 					if "video" in type[:5]:
 						link_name = "Linked Video File: %s" % data_file['filename']
 						link_media.setdefault(link_name, [])
@@ -443,7 +443,8 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
-						link_media[link_name].append(data['name'])
+						link_media[link_name].append(module_location)
+						link_media[link_name].append(file_location)
 					if "flash" in type.split('-')[-1:]:
 						link_name = "Linked SWF File: %s" % data_file['filename']
 						link_media.setdefault(link_name, [])
@@ -451,10 +452,12 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
 						link_media[link_name].append(" ")
-						link_media[link_name].append(data['name'])
+						link_media[link_name].append(module_location)
+						link_media[link_name].append(file_location)
+
 				except KeyError:
 					pass
-	#s	#search announcements
+#checks all announcements in a canvas course for media links
 announce = course.get_discussion_topics(only_announcements=True)
 if announce:
 	print "Checking Announcements"
@@ -551,12 +554,12 @@ if announce:
 							link_media[link_name].append(file_location)
 					except KeyError:
 						pass
+#Uses YouTube API to check each video for captions
 for key in youtube_link:
 	if "playlist" in key:
 		youtube_link[key].insert(0, 'this is a playlist, check individual videos')
 	else:
-		pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
-		video_id = re.findall(pattern, key, re.MULTILINE | re.IGNORECASE)
+		video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
 		for item in video_id:
 			is_ASR = False
 			is_standard = False
@@ -645,11 +648,16 @@ for key in youtube_link:
 				youtube_link[key].insert(1, '')
 				youtube_link[key].insert(2, '')
 				youtube_link[key].insert(3, '')
-#vimeo link					
+#Uses Vimeo API to check videos for captions				
 for link in vimeo_link:
 	if "player" in link:
 		split_link = link.split('/')
-		video_id = split_link[4]
+		if "?" in split_link[4]:
+			video_link = split_link[4]
+			split_link_question = video_link.split('?')
+			video_id = split_link_question[0]
+		else:
+			video_id = split_link[4]
 		try:
 			r = requests.get('https://api.vimeo.com/videos/%s/texttracks' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
 			data = r.json()
