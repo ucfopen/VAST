@@ -6,7 +6,7 @@ import time
 import re
 from bs4 import BeautifulSoup 
 from collections import OrderedDict
-from config_course_media_search_canvasapi import *  
+from vast_config import *  
 start_time = time.time()
 course_id= raw_input('Canvas ID')
 canvas = Canvas(api_url, api_key)
