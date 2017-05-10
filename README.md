@@ -2,7 +2,7 @@
 VAST is a Python script that searches an Instructure Canvas course for media and returns results in a CSV file.
 
 ## Installation
-
+* Install all dependencies by using pip install -r https://***REMOVED***/john.raible/course-media-search-tool-V2/requirements.txt
 
 ## Requirements
 * Python 2.7
