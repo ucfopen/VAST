@@ -103,7 +103,7 @@ if pages:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(page_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type.split('-')[-1:]:
+						if "flash" in type:
 							link_name = "Linked SWF File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -200,7 +200,7 @@ if assign:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(assign_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type.split('-')[-1:]:
+						if "flash" in type:
 							link_name = "Linked SWF File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -293,7 +293,7 @@ if discuss:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(discuss_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type.split('-')[-1:]:
+						if "flash" in type:
 							link_name = "Linked SWF File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
@@ -387,7 +387,7 @@ if syllabus.syllabus_body:
 					link_media[link_name].append(" ")
 					link_media[link_name].append(syllabus_location)
 					link_media[link_name].append(file_location)
-				if "flash" in type.split('-')[-1:]:
+				if "flash" in type:
 					link_name = "Linked SWF File: %s" % data_file['filename']
 					link_media.setdefault(link_name, [])
 					link_media[link_name].append("Manually Check for Captions")
@@ -445,7 +445,7 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(module_location)
 						link_media[link_name].append(file_location)
-					if "flash" in type.split('-')[-1:]:
+					if "flash" in type:
 						link_name = "Linked SWF File: %s" % data_file['filename']
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
@@ -543,7 +543,7 @@ if announce:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(announce_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type.split('-')[-1:]:
+						if "flash" in type:
 							link_name = "Linked SWF File: %s" % data_file['filename']
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
