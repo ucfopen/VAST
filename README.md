@@ -5,7 +5,7 @@ VAST is a Python script that searches an Instructure Canvas course for media and
 
 
 ## Requirements
-*P ython 2.7
+* Python 2.7
 * YouTube API Key
 * Vimeo API Key
 
