@@ -19,9 +19,9 @@ VAST will identify the following types of media:
 * SWF  files linked from the Rich Content Editor
 * Media comments in the Rich Content Editor
 * Links from video providers:
-** Films on Demand
-** Alexander Street Press
-** Kanopy
+⋅⋅* Films on Demand
+⋅⋅* Alexander Street Press
+⋅⋅* Kanopy
 Note: VAST relies on the mime type of the file provided by Canvas
 
 ## Limitations
@@ -36,8 +36,5 @@ VAST is designed to be used as a desktop utility on Mac or Linux. To run on Wind
 1. Open up a terminal window
 2. Go to the directory containing vast.py (use cd command)
 3. Type "python vast.py"
-4. Enter the Canvas course id number e.g.(1234567 from https://example.instructure.com/courses/**1234567**)
+4. Enter the Canvas course id number e.g.(**1234567** from https://example.instructure.com/courses/**1234567**)
 5. The report will be saved in the same directory as the vast.py script
-
-
-## Getting Started
