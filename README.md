@@ -1,14 +1,20 @@
 # VAST (Video Accessibility Scanning Tool)
 VAST is a Python script that searches an Instructure Canvas course for media and returns results in a CSV file.
 
-## Installation
-* Install all dependencies by using pip install -r https://***REMOVED***/john.raible/course-media-search-tool-V2/requirements.txt
-* Make sure vast.py and vast_config.py are in same location
-
 ## Requirements
 * Python 2.7
 * YouTube API Key
 * Vimeo API Key
+
+## Installation
+* Install all dependencies by using pip install -r https://***REMOVED***/john.raible/course-media-search-tool-V2/requirements.txt
+* Make sure vast.py and vast_config.py are in same location
+* Supply the following in vast_config.py:
+    * api_key (Canvas)
+    * api_url (Canvas URL and API e.g. https://example.instructure.com/api/v1/)
+    * youtube_key 
+    * vimeo_key
+    * courses (e.g. https://example.instructure.com/courses)
 
 ## Types of Media
 VAST will identify the following types of media:
@@ -19,9 +25,9 @@ VAST will identify the following types of media:
 * SWF  files linked from the Rich Content Editor
 * Media comments in the Rich Content Editor
 * Links from video providers:
-⋅⋅* Films on Demand
-⋅⋅* Alexander Street Press
-⋅⋅* Kanopy
+    * Films on Demand
+    * Alexander Street Press
+    * Kanopy
 Note: VAST relies on the mime type of the file provided by Canvas
 
 ## Limitations
