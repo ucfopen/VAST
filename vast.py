@@ -48,7 +48,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf.kanopystreaming.com" in s]
+			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -84,7 +84,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf.kanopystreaming.com" in s]
+			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -193,7 +193,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf.kanopystreaming.com" in s]
+			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -229,7 +229,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf.kanopystreaming.com" in s]
+			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -338,7 +338,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf.kanopystreaming.com" in s]
+			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -374,7 +374,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf.kanopystreaming.com" in s]
+			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -477,7 +477,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_embed_kanopy = [s for s in list_filter1 if "ucf.kanopystreaming.com" in s]
+		library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
 		for link in library_embed_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -513,7 +513,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_iframe_kanopy = [s for s in list_filter2 if "ucf.kanopystreaming.com" in s]
+		library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
 		for link in library_iframe_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -611,7 +611,7 @@ if modules:
 					library_embed.append(href)
 				if "fod.infobase.com" in href:
 					library_embed.append(href)
-				if "ucf.kanopystreaming.com" in href:
+				if "ucf-kanopystreaming-com" in href:
 					library_embed.append(href)
 			for y_link in youtube_embed:
 				youtube_link.setdefault(y_link, []) 
@@ -693,7 +693,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf.kanopystreaming.com" in s]
+			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -729,7 +729,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf.kanopystreaming.com" in s]
+			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -809,6 +809,7 @@ if announce:
 					except KeyError:
 						pass
 #Uses YouTube API to check each video for captions
+print "Checking YouTube Captions"
 for key in youtube_link:
 	if "playlist" in key:
 		youtube_link[key].insert(0, 'this is a playlist, check individual videos')
@@ -903,6 +904,7 @@ for key in youtube_link:
 				youtube_link[key].insert(2, '')
 				youtube_link[key].insert(3, '')
 #Uses Vimeo API to check videos for captions				
+print "Checking Vimeo Captions"
 for link in vimeo_link:
 	if "player" in link:
 		split_link = link.split('/')
