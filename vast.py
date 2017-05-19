@@ -28,11 +28,11 @@ if pages:
 		if page_body.body:
 			contents = page_body.body.encode('utf-8')
 			soup = BeautifulSoup (contents, "html.parser")
-			list = []
+			href_href_list = []
 			for link in soup.find_all('a'):
-				list.append(link.get('href'))
-			list_filter1 = filter(None, list)
-			library_embed_fod = [s for s in list_filter1 if "fod.infobase.com" in s]
+				href_href_list.append(link.get('href'))
+			href_list_filter = filter(None, href_href_list)
+			library_embed_fod = [s for s in href_list_filter if "fod.infobase.com" in s]
 			for link in library_embed_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -40,7 +40,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_embed_alex = [s for s in list_filter1 if "search.alexanderstreet.com" in s]
+			library_embed_alex = [s for s in href_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_embed_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -48,7 +48,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -56,19 +56,19 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			youtube_embed = [s for s in list_filter1 if re.search(youtube_pattern, s)]
-			vimeo_embed = [s for s in list_filter1 if "vimeo.com" in s]
+			youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+			vimeo_embed = [s for s in href_list_filter if "vimeo.com" in s]
 			for link in youtube_embed:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(page_location)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, [])
 				vimeo_link[v_link].append(page_location)
-			list2 = []
+			iframe_list = []
 			for link in soup.find_all('iframe'):
-				list2.append(link.get('src')) 
-			list_filter2 = filter(None, list2)
-			library_iframe_fod = [s for s in list_filter2 if "fod.infobase.com" in s]
+				iframe_list.append(link.get('src')) 
+			iframe_list_filter = filter(None, iframe_list)
+			library_iframe_fod = [s for s in iframe_list_filter if "fod.infobase.com" in s]
 			for link in library_iframe_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -76,7 +76,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_iframe_alex = [s for s in list_filter2 if "search.alexanderstreet.com" in s]
+			library_iframe_alex = [s for s in iframe_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_iframe_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -84,7 +84,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -92,8 +92,8 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			youtube_iframe = [s for s in list_filter2 if re.search(youtube_pattern, s)]
-			vimeo_iframe = [s for s in list_filter2 if "vimeo.com" in s]
+			youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+			vimeo_iframe = [s for s in iframe_list_filter if "vimeo.com" in s]
 			for link in youtube_iframe:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(page_location)
@@ -173,11 +173,11 @@ if assign:
 			assign_location = item.html_url
 			contents = item.description.encode('utf-8')
 			soup = BeautifulSoup (contents, "html.parser")
-			list = []
+			href_list = []
 			for link in soup.find_all('a'):
-				list.append(link.get('href')) 
-			list_filter1 = filter(None, list)
-			library_embed_fod = [s for s in list_filter1 if "fod.infobase.com" in s]
+				href_list.append(link.get('href')) 
+			href_list_filter = filter(None, href_list)
+			library_embed_fod = [s for s in href_list_filter if "fod.infobase.com" in s]
 			for link in library_embed_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -185,7 +185,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_embed_alex = [s for s in list_filter1 if "search.alexanderstreet.com" in s]
+			library_embed_alex = [s for s in href_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_embed_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -193,7 +193,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -201,19 +201,19 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			youtube_embed = [s for s in list_filter1 if re.search(youtube_pattern, s)]
-			vimeo_embed = [s for s in list_filter1 if "vimeo.com" in s]
+			youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+			vimeo_embed = [s for s in href_list_filter if "vimeo.com" in s]
 			for link in youtube_embed:
 				youtube_link.setdefault(link, []) 
 				youtube_link[link].append(item.html_url)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, []) 
 				vimeo_link[v_link].append(item.html_url)
-			list2 = []
+			iframe_list = []
 			for link in soup.find_all('iframe'):
-				list2.append(link.get('src')) 
-			list_filter2 = filter(None, list2)
-			library_iframe_fod = [s for s in list_filter2 if "fod.infobase.com" in s]
+				iframe_list.append(link.get('src')) 
+			iframe_list_filter = filter(None, iframe_list)
+			library_iframe_fod = [s for s in iframe_list_filter if "fod.infobase.com" in s]
 			for link in library_iframe_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -221,7 +221,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_iframe_alex = [s for s in list_filter2 if "search.alexanderstreet.com" in s]
+			library_iframe_alex = [s for s in iframe_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_iframe_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -229,7 +229,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -237,8 +237,8 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			youtube_iframe = [s for s in list_filter2 if re.search(youtube_pattern, s)]
-			vimeo_iframe = [s for s in list_filter2 if "vimeo.com" in s]
+			youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+			vimeo_iframe = [s for s in iframe_list_filter if "vimeo.com" in s]
 			for link in youtube_iframe:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(item.html_url)
@@ -318,11 +318,11 @@ if discuss:
 			discuss_location = item.html_url
 			contents = item.message.encode('utf-8')
 			soup = BeautifulSoup (contents, "html.parser")
-			list = []
+			href_list = []
 			for link in soup.find_all('a'):
-				list.append(link.get('href')) 
-			list_filter1 = filter(None, list)
-			library_embed_fod = [s for s in list_filter1 if "fod.infobase.com" in s]
+				href_list.append(link.get('href')) 
+			href_list_filter = filter(None, href_list)
+			library_embed_fod = [s for s in href_list_filter if "fod.infobase.com" in s]
 			for link in library_embed_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -330,7 +330,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_embed_alex = [s for s in list_filter1 if "search.alexanderstreet.com" in s]
+			library_embed_alex = [s for s in href_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_embed_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -338,7 +338,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -346,19 +346,19 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			youtube_embed = [s for s in list_filter1 if re.search(youtube_pattern, s)]
-			vimeo_embed = [s for s in list_filter1 if "vimeo.com" in s]
+			youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+			vimeo_embed = [s for s in href_list_filter if "vimeo.com" in s]
 			for link in youtube_embed:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(item.html_url)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, [])
 				youtube_link[link].append(item.html_url)  
-			list2 = []
+			iframe_list = []
 			for link in soup.find_all('iframe'):
-				list2.append(link.get('src')) 
-			list_filter2 = filter(None, list2)
-			library_iframe_fod = [s for s in list_filter2 if "fod.infobase.com" in s]
+				iframe_list.append(link.get('src')) 
+			iframe_list_filter = filter(None, iframe_list)
+			library_iframe_fod = [s for s in iframe_list_filter if "fod.infobase.com" in s]
 			for link in library_iframe_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -366,7 +366,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_iframe_alex = [s for s in list_filter2 if "search.alexanderstreet.com" in s]
+			library_iframe_alex = [s for s in iframe_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_iframe_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -374,7 +374,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -382,8 +382,8 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			youtube_iframe = [s for s in list_filter2 if re.search(youtube_pattern, s)]
-			vimeo_iframe = [s for s in list_filter2 if "vimeo.com" in s]
+			youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+			vimeo_iframe = [s for s in iframe_list_filter if "vimeo.com" in s]
 			for v_link in vimeo_iframe:
 				vimeo_link.setdefault(v_link, [])
 				youtube_link[link].append(item.html_url)
@@ -457,11 +457,11 @@ if syllabus.syllabus_body:
 	try:
 		contents = syllabus.syllabus_body
 		soup = BeautifulSoup (contents, "html.parser")
-		list = []
+		href_list = []
 		for link in soup.find_all('a'):
-			list.append(link.get('href')) 
-		list_filter1 = filter(None, list)
-		library_embed_fod = [s for s in list_filter1 if "fod.infobase.com" in s]
+			href_list.append(link.get('href')) 
+		href_list_filter = filter(None, href_list)
+		library_embed_fod = [s for s in href_list_filter if "fod.infobase.com" in s]
 		for link in library_embed_fod:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -469,7 +469,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_embed_alex = [s for s in list_filter1 if "search.alexanderstreet.com" in s]
+		library_embed_alex = [s for s in href_list_filter if "search.alexanderstreet.com" in s]
 		for link in library_embed_alex:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -477,7 +477,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
+		library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
 		for link in library_embed_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -485,19 +485,19 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		youtube_embed = [s for s in list_filter1 if re.search(youtube_pattern, s)]
-		vimeo_embed = [s for s in list_filter1 if "vimeo.com" in s]
+		youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+		vimeo_embed = [s for s in href_list_filter if "vimeo.com" in s]
 		for link in youtube_embed:
 			youtube_link.setdefault(link, []) 
 			youtube_link[link].append(syllabus_location)
 		for v_link in vimeo_embed:
 			vimeo_link.setdefault(v_link, []) 
 			vimeo_link[v_link].append(syllabus_location)
-		list2 = []
+		iframe_list = []
 		for link in soup.find_all('iframe'):
-			list2.append(link.get('src')) 
-		list_filter2 = filter(None, list2)
-		library_iframe_fod = [s for s in list_filter2 if "fod.infobase.com" in s]
+			iframe_list.append(link.get('src')) 
+		iframe_list_filter = filter(None, iframe_list)
+		library_iframe_fod = [s for s in iframe_list_filter if "fod.infobase.com" in s]
 		for link in library_iframe_fod:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -505,7 +505,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_iframe_alex = [s for s in list_filter2 if "search.alexanderstreet.com" in s]
+		library_iframe_alex = [s for s in iframe_list_filter if "search.alexanderstreet.com" in s]
 		for link in library_iframe_alex:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -513,7 +513,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
+		library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
 		for link in library_iframe_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -521,8 +521,8 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		youtube_iframe = [s for s in list2 if re.search(youtube_pattern, s)]
-		vimeo_iframe = [s for s in list2 if "vimeo.com" in s]
+		youtube_iframe = [s for s in iframe_list if re.search(youtube_pattern, s)]
+		vimeo_iframe = [s for s in iframe_list if "vimeo.com" in s]
 		for link in youtube_iframe:
 			youtube_link.setdefault(link, [])
 			youtube_link[link].append(syllabus_location)
@@ -673,11 +673,11 @@ if announce:
 		if item.message:
 			contents = item.message.encode('utf-8')
 			soup = BeautifulSoup (contents, "html.parser")
-			list = []
+			href_list = []
 			for link in soup.find_all('a'):
-				list.append(link.get('href')) 
-			list_filter1 = filter(None, list)
-			library_embed_fod = [s for s in list_filter1 if "fod.infobase.com" in s]
+				href_list.append(link.get('href')) 
+			href_list_filter = filter(None, href_list)
+			library_embed_fod = [s for s in href_list_filter if "fod.infobase.com" in s]
 			for link in library_embed_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -685,7 +685,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_embed_alex = [s for s in list_filter1 if "search.alexanderstreet.com" in s]
+			library_embed_alex = [s for s in href_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_embed_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -693,7 +693,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_embed_kanopy = [s for s in list_filter1 if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -701,19 +701,19 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			youtube_embed = [s for s in list_filter1 if re.search(youtube_pattern, s)]
-			vimeo_embed = [s for s in list_filter1 if "vimeo.com" in s]
+			youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+			vimeo_embed = [s for s in href_list_filter if "vimeo.com" in s]
 			for link in youtube_embed:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(announce_location)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, [])
 				vimeo_link[v_link].append(announce_location)
-			list2 = []
+			iframe_list = []
 			for link in soup.find_all('iframe'):
-				list2.append(link.get('src')) 
-			list_filter2 = filter(None, list2)
-			library_iframe_fod = [s for s in list_filter2 if "fod.infobase.com" in s]
+				iframe_list.append(link.get('src')) 
+			iframe_list_filter = filter(None, iframe_list)
+			library_iframe_fod = [s for s in iframe_list_filter if "fod.infobase.com" in s]
 			for link in library_iframe_fod:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -721,7 +721,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_iframe_alex = [s for s in list_filter2 if "search.alexanderstreet.com" in s]
+			library_iframe_alex = [s for s in iframe_list_filter if "search.alexanderstreet.com" in s]
 			for link in library_iframe_alex:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -729,7 +729,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_iframe_kanopy = [s for s in list_filter2 if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -737,8 +737,8 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			youtube_iframe = [s for s in list_filter2 if re.search(youtube_pattern, s)]
-			vimeo_iframe = [s for s in list_filter2 if "vimeo.com" in s]
+			youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+			vimeo_iframe = [s for s in iframe_list_filter if "vimeo.com" in s]
 			for link in youtube_iframe:
 				youtube_link.setdefault(link, [])
 				youtube_link[link].append(announce_location)
@@ -814,7 +814,7 @@ for key in youtube_link:
 	if "playlist" in key:
 		youtube_link[key].insert(0, 'this is a playlist, check individual videos')
 	else:
-		video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
+		video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)	
 		for item in video_id:
 			is_ASR = False
 			is_standard = False
@@ -844,7 +844,7 @@ for key in youtube_link:
 								youtube_link[key].insert(1, hour[2:])
 								youtube_link[key].insert(2, min)
 								youtube_link[key].insert(3, sec[:-1])
-							else:
+							elif "M" in duration:
 								min, sec = duration.split('M')
 								if min == None:
 									youtube_link[key].insert(1, '0')
@@ -854,6 +854,10 @@ for key in youtube_link:
 									youtube_link[key].insert(1, '0')
 									youtube_link[key].insert(2, min[2:])
 									youtube_link[key].insert(3, sec[:-1])
+   							else:
+   								youtube_link[key].insert(1, '0')
+								youtube_link[key].insert(2, '0')
+								youtube_link[key].insert(3, duration[2:-1])
 					if is_standard == False and is_ASR == False:
 						youtube_link[key].insert(0, "No Captions in English")
 						r = requests.get(google_video + '?part=contentDetails&id=' + item + '&key=' + youtube_key)
@@ -866,7 +870,7 @@ for key in youtube_link:
 								youtube_link[key].insert(1, hour[2:])
 								youtube_link[key].insert(2, min)
 								youtube_link[key].insert(3, sec[:-1])
-							else:
+							elif "M" in duration:
 								min, sec = duration.split('M')
 								if min == None:
 									youtube_link[key].insert(1, '0')
@@ -876,6 +880,10 @@ for key in youtube_link:
 									youtube_link[key].insert(1, '0')
 									youtube_link[key].insert(2, min[2:])
 									youtube_link[key].insert(3, sec[:-1])
+   							else:
+   								youtube_link[key].insert(1, '0')
+								youtube_link[key].insert(2, '0')
+								youtube_link[key].insert(3, duration[2:-1])
 				if not data['items']:
 					youtube_link[key].insert(0, "No Captions")
 					r = requests.get(google_video + '?part=contentDetails&id=' + item + '&key=' + youtube_key)
@@ -888,7 +896,7 @@ for key in youtube_link:
 							youtube_link[key].insert(1, hour[2:])
 							youtube_link[key].insert(2, min)
 							youtube_link[key].insert(3, sec[:-1])
-						else:
+						elif "M" in duration:
 							min, sec = duration.split('M')
 							if min == None:
 								youtube_link[key].insert(1, '0')
@@ -898,6 +906,12 @@ for key in youtube_link:
 								youtube_link[key].insert(1, '0')
 								youtube_link[key].insert(2, min[2:])
 								youtube_link[key].insert(3, sec[:-1])
+   						else:
+   							youtube_link[key].insert(1, '0')
+							youtube_link[key].insert(2, '0')
+							youtube_link[key].insert(3, duration[2:-1])
+
+							
 			except KeyError:
 				youtube_link[key].insert(0, "Unable to Check Youtube Video")
 				youtube_link[key].insert(1, '')
@@ -981,7 +995,7 @@ for link in vimeo_link:
 						vimeo_link[link].insert(3, second)
 		except KeyError:
 			vimeo_link[link].insert(0, 'Unable to Check Vimeo Video')
-writer.writerow(['Video URL', 'Caption Status', 'Hour', 'Minute', 'Second', 'Page Location', 'File Location'])
+writer.writerow(['Media', 'Caption Status', 'Hour', 'Minute', 'Second', 'Page Location', 'File Location'])
 for key, value in youtube_link.items():
 	writer.writerow([key] + value)
 for key, value in vimeo_link.items():
