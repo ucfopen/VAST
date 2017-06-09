@@ -6,7 +6,7 @@ import time
 import re
 from bs4 import BeautifulSoup 
 from collections import OrderedDict
-from vast_config import *  
+from config_course_media_search_canvasapi import *  
 start_time = time.time()
 course_id= raw_input('Canvas ID')
 canvas = Canvas(api_url, api_key)
@@ -48,7 +48,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -84,7 +84,7 @@ if pages:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(page_location)
-			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -193,7 +193,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -208,6 +208,7 @@ if assign:
 				youtube_link[link].append(item.html_url)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, []) 
+				vimeo_link[v_link].append(item.html_url)
 				vimeo_link[v_link].append(item.html_url)
 			iframe_list = []
 			for link in soup.find_all('iframe'):
@@ -229,7 +230,7 @@ if assign:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(assign_location)
-			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -338,7 +339,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -353,7 +354,7 @@ if discuss:
 				youtube_link[link].append(item.html_url)
 			for v_link in vimeo_embed:
 				vimeo_link.setdefault(v_link, [])
-				youtube_link[link].append(item.html_url)  
+				vimeo_link[v_link].append(item.html_url)  
 			iframe_list = []
 			for link in soup.find_all('iframe'):
 				iframe_list.append(link.get('src')) 
@@ -374,7 +375,7 @@ if discuss:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(discuss_location)
-			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -386,7 +387,7 @@ if discuss:
 			vimeo_iframe = [s for s in iframe_list_filter if "vimeo.com" in s]
 			for v_link in vimeo_iframe:
 				vimeo_link.setdefault(v_link, [])
-				youtube_link[link].append(item.html_url)
+				vimeo_link[v_link].append(item.html_url)
 			for video in soup.find_all('video'):
 				instructure = video.get('class')
 				media_id = video.get('data-media_comment_id')
@@ -477,7 +478,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
+		library_embed_kanopy = [s for s in href_list_filter if "kanopystreaming-com" in s]
 		for link in library_embed_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -492,6 +493,9 @@ if syllabus.syllabus_body:
 			youtube_link[link].append(syllabus_location)
 		for v_link in vimeo_embed:
 			vimeo_link.setdefault(v_link, []) 
+			
+			
+			
 			vimeo_link[v_link].append(syllabus_location)
 		iframe_list = []
 		for link in soup.find_all('iframe'):
@@ -513,7 +517,7 @@ if syllabus.syllabus_body:
 			library_media[link].append(" ")
 			library_media[link].append(" ")
 			library_media[link].append(syllabus_location)
-		library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
+		library_iframe_kanopy = [s for s in iframe_list_filter if "kanopystreaming-com" in s]
 		for link in library_iframe_kanopy:
 			library_media.setdefault(link, [])
 			library_media[link].append("Manually Check for Captions")
@@ -611,7 +615,7 @@ if modules:
 					library_embed.append(href)
 				if "fod.infobase.com" in href:
 					library_embed.append(href)
-				if "ucf-kanopystreaming-com" in href:
+				if "kanopystreaming-com" in href:
 					library_embed.append(href)
 			for y_link in youtube_embed:
 				youtube_link.setdefault(y_link, []) 
@@ -693,7 +697,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_embed_kanopy = [s for s in href_list_filter if "ucf-kanopystreaming-com" in s]
+			library_embed_kanopy = [s for s in href_list_filter if "kanopystreaming-com" in s]
 			for link in library_embed_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -729,7 +733,7 @@ if announce:
 				library_media[link].append(" ")
 				library_media[link].append(" ")
 				library_media[link].append(announce_location)
-			library_iframe_kanopy = [s for s in iframe_list_filter if "ucf-kanopystreaming-com" in s]
+			library_iframe_kanopy = [s for s in iframe_list_filter if "kanopystreaming-com" in s]
 			for link in library_iframe_kanopy:
 				library_media.setdefault(link, [])
 				library_media[link].append("Manually Check for Captions")
@@ -943,7 +947,7 @@ for link in vimeo_link:
 				vimeo_link[link].insert(3, second)
 			else:
 				for d in data['data']:
-					if d['language'] == 'en':
+					if d['language'] == 'en' or 'en-US':
 						vimeo_link[link].insert(0, 'Captions in English')
 						vimeo_link[link].insert(1, '')
 						vimeo_link[link].insert(2, '')
@@ -964,8 +968,12 @@ for link in vimeo_link:
 			vimeo_link[link].insert(2, '')
 			vimeo_link[link].insert(3, '')
 	else:
-		split_link = link.split('/')
-		video_id = split_link[-1]
+		if "review" in link:
+			split_link = link.split('/')
+			video_id = split_link[-2]
+		else:
+			split_link = link.split('/')
+			video_id = split_link[-1]
 		try:
 			r = requests.get('https://api.vimeo.com/videos/%s/texttracks' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
 			data = r.json()
@@ -981,8 +989,11 @@ for link in vimeo_link:
 				vimeo_link[link].insert(3, second)
 			else:
 				for d in data['data']:
-					if d['language'] == 'en':
+					if d['language'] == 'en' or 'en-US':
 						vimeo_link[link].insert(0, 'Captions in English')
+						vimeo_link[link].insert(1, '')
+						vimeo_link[link].insert(2, '')
+						vimeo_link[link].insert(3, '')
 					else:
 						vimeo_link[link].insert(0, 'No English Captions')
 						r = requests.get('https://api.vimeo.com/videos/%s' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
@@ -995,6 +1006,9 @@ for link in vimeo_link:
 						vimeo_link[link].insert(3, second)
 		except KeyError:
 			vimeo_link[link].insert(0, 'Unable to Check Vimeo Video')
+			vimeo_link[link].insert(1, " ")
+			vimeo_link[link].insert(2, " ")
+			vimeo_link[link].insert(3, " ")
 writer.writerow(['Media', 'Caption Status', 'Hour', 'Minute', 'Second', 'Page Location', 'File Location'])
 for key, value in youtube_link.items():
 	writer.writerow([key] + value)
