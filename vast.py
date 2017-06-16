@@ -13,6 +13,8 @@ canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
 print "Checking " + course.name
 writer = csv.writer(open('%s.csv' % course.name, 'wb'))
+captions_multiple = ['1','2']
+set(captions_multiple)
 youtube_link = {}
 vimeo_link = {}
 media_link = {}
@@ -924,6 +926,7 @@ for key in youtube_link:
 #Uses Vimeo API to check videos for captions				
 print "Checking Vimeo Captions"
 for link in vimeo_link:
+	vimeo_captions = []
 	if "player" in link:
 		split_link = link.split('/')
 		if "?" in split_link[4]:
@@ -947,21 +950,26 @@ for link in vimeo_link:
 				vimeo_link[link].insert(3, second)
 			else:
 				for d in data['data']:
-					if d['language'] == 'en' or 'en-US':
-						vimeo_link[link].insert(0, 'Captions in English')
-						vimeo_link[link].insert(1, '')
-						vimeo_link[link].insert(2, '')
-						vimeo_link[link].insert(3, '')
+					if d['language'] == 'en' or d['language'] == 'en-US':
+						vimeo_captions.append('1')
 					else:
-						vimeo_link[link].insert(0, 'No English Captions')
-						r = requests.get('https://api.vimeo.com/videos/%s' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
-						data = r.json()
-						vimeo_duration = data['duration']
-						hour, remainder = divmod(vimeo_duration, 3600)
-						minute, second = divmod(remainder, 60)
-						vimeo_link[link].insert(1, hour)
-						vimeo_link[link].insert(2, minute)
-						vimeo_link[link].insert(3, second)
+						vimeo_captions.append('2')
+				set(vimeo_captions)
+				if vimeo_captions == captions_multiple:
+					vimeo_link[link].insert(0, 'Captions in English')
+					vimeo_link[link].insert(1, '')
+					vimeo_link[link].insert(2, '')
+					vimeo_link[link].insert(3, '')
+				else:
+					vimeo_link[link].insert(0, 'No English Captions')
+					r = requests.get('https://api.vimeo.com/videos/%s' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
+					data = r.json()
+					vimeo_duration = data['duration']
+					hour, remainder = divmod(vimeo_duration, 3600)
+					minute, second = divmod(remainder, 60)
+					vimeo_link[link].insert(1, hour)
+					vimeo_link[link].insert(2, minute)
+					vimeo_link[link].insert(3, second)
 		except KeyError:
 			vimeo_link[link].insert(0, 'Unable to Vimeo Check Video')
 			vimeo_link[link].insert(1, '')
@@ -989,21 +997,27 @@ for link in vimeo_link:
 				vimeo_link[link].insert(3, second)
 			else:
 				for d in data['data']:
-					if d['language'] == 'en' or 'en-US':
-						vimeo_link[link].insert(0, 'Captions in English')
-						vimeo_link[link].insert(1, '')
-						vimeo_link[link].insert(2, '')
-						vimeo_link[link].insert(3, '')
+					if d['language'] == 'en' or d['language'] == 'en-US':
+						vimeo_captions.append('1')
 					else:
-						vimeo_link[link].insert(0, 'No English Captions')
-						r = requests.get('https://api.vimeo.com/videos/%s' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
-						data = r.json()
-						vimeo_duration = data['duration']
-						hour, remainder = divmod(vimeo_duration, 3600)
-						minute, second = divmod(remainder, 60)
-						vimeo_link[link].insert(1, hour)
-						vimeo_link[link].insert(2, minute)
-						vimeo_link[link].insert(3, second)
+						vimeo_captions.append('2')
+				listset(vimeo_captions)
+				vimeo_captions.sort()
+				if vimeo_captions == captions_multiple:
+					vimeo_link[link].insert(0, 'Captions in English')
+					vimeo_link[link].insert(1, '')
+					vimeo_link[link].insert(2, '')
+					vimeo_link[link].insert(3, '')
+				else:
+					vimeo_link[link].insert(0, 'No English Captions')
+					r = requests.get('https://api.vimeo.com/videos/%s' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
+					data = r.json()
+					vimeo_duration = data['duration']
+					hour, remainder = divmod(vimeo_duration, 3600)
+					minute, second = divmod(remainder, 60)
+					vimeo_link[link].insert(1, hour)
+					vimeo_link[link].insert(2, minute)
+					vimeo_link[link].insert(3, second)
 		except KeyError:
 			vimeo_link[link].insert(0, 'Unable to Check Vimeo Video')
 			vimeo_link[link].insert(1, " ")
