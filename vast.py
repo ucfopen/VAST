@@ -132,12 +132,11 @@ if pages:
 				if location:
 					try:
 						file_id = location.split('/')[-1:]
-						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-						data_file = r.json()
-						file_location = data_file['url'].split('?')[0]
-						type = data_file['mime_class']
-						if "audio" in type:
-							link_name = "Linked Audio File: %s" % data_file['filename']
+						file_id_string = ', '.join(file_id)
+						get_file = course.get_file(file_id_string)
+						file_location = get_file.url.split('?')[0]
+						if "audio" in get_file.mime_class:
+							link_name = "Linked Audio File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -145,8 +144,8 @@ if pages:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(page_location)
 							link_media[link_name].append(file_location)
-						if "video" in type:
-							link_name = "Linked Video File: %s" % data_file['filename']
+						if "video" in get_file.mime_class:
+							link_name = "Linked Video File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -154,8 +153,8 @@ if pages:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(page_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type:
-							link_name = "Linked SWF File: %s" % data_file['filename']
+						if "flash" in get_file.mime_class:
+							link_name = "Linked SWF File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -163,7 +162,7 @@ if pages:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(page_location)
 							link_media[link_name].append(file_location)
-					except KeyError:
+					except:
 						pass
 
 #checks all assignments in a canvas course for media links
@@ -278,12 +277,11 @@ if assign:
 				if location:
 					try:
 						file_id = location.split('/')[-1:]
-						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-						data_file = r.json()
-						file_location = data_file['url'].split('?')[0]
-						type = data_file['mime_class']
-						if "audio" in type:
-							link_name = "Linked Audio File: %s" % data_file['filename'], data_file['url']
+						file_id_string = ', '.join(file_id)
+						get_file = course.get_file(file_id_string)
+						file_location = get_file.url.split('?')[0]
+						if "audio" in get_file.mime_class:
+							link_name = "Linked Audio File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -291,8 +289,8 @@ if assign:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(assign_location)
 							link_media[link_name].append(file_location)
-						if "video" in type:
-							link_name = "Linked Video File: %s" % data_file['filename']
+						if "video" in get_file.mime_class:
+							link_name = "Linked Video File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							media_link[m_link].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -300,8 +298,8 @@ if assign:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(assign_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type:
-							link_name = "Linked SWF File: %s" % data_file['filename']
+						if "flash" in get_file.mime_class:
+							link_name = "Linked SWF File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -309,7 +307,7 @@ if assign:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(assign_location)
 							link_media[link_name].append(file_location)
-					except KeyError:
+					except:
 						pass
 #checks all discuss in a canvas course for media links
 discuss = course.get_discussion_topics()
@@ -420,11 +418,11 @@ if discuss:
 				if location:
 					try:
 						file_id = location.split('/')[-1:]
-						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-						data_file = r.json()
-						file_location = data_file['url'].split('?')[0]
-						if "audio" in type:
-							link_name = "Linked Audio File: %s" %data_file['filename']
+						file_id_string = ', '.join(file_id)
+						get_file = course.get_file(file_id_string)
+						file_location = get_file.url.split('?')[0]
+						if "audio" in get_file.mime_class:
+							link_name = "Linked Audio File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -432,8 +430,8 @@ if discuss:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(discuss_location)
 							link_media[link_name].append(file_location)
-						if "video" in type:
-							link_name = "Linked Video File: %s" % data_file['filename']
+						if "video" in get_file.mime_class:
+							link_name = "Linked Video File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -441,8 +439,8 @@ if discuss:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(discuss_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type:
-							link_name = "Linked SWF File: %s" % data_file['filename']
+						if "flash" in get_file.mime_class:
+							link_name = "Linked SWF File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -450,7 +448,7 @@ if discuss:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(discuss_location)
 							link_media[link_name].append(file_location)
-					except KeyError:
+					except:
 						pass
 #checks the syllabus in a canvas course for media links
 syllabus = canvas.get_course(course_id, include='syllabus_body')
@@ -495,9 +493,6 @@ if syllabus.syllabus_body:
 			youtube_link[link].append(syllabus_location)
 		for v_link in vimeo_embed:
 			vimeo_link.setdefault(v_link, []) 
-			
-			
-			
 			vimeo_link[v_link].append(syllabus_location)
 		iframe_list = []
 		for link in soup.find_all('iframe'):
@@ -563,38 +558,40 @@ if syllabus.syllabus_body:
 			instructure = file_link.get('class')
 			location = file_link.get('data-api-endpoint')
 			if location:
-				file_id = location.split('/')[-1:]
-				r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-				data_file = r.json()
-				file_location = data_file['url'].split('?')[0]
-				type = data_file['mime_class']
-				if "audio" in type:
-					link_name = "Linked Audio File: %s" % data_file['filename']
-					link_media.setdefault(link_name, [])
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(syllabus_location)
-					link_media[link_name].append(file_location)
-				if "video" in type:
-					link_name = "Linked Video File: %s" % data_file['filename']
-					link_media.setdefault(link_name, [])
-					link_media[link_name].append("Manually Check for Captions")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(syllabus_location)
-					link_media[link_name].append(file_location)
-				if "flash" in type:
-					link_name = "Linked SWF File: %s" % data_file['filename']
-					link_media.setdefault(link_name, [])
-					link_media[link_name].append("Manually Check for Captions")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(" ")
-					link_media[link_name].append(syllabus_location)
-					link_media[link_name].append(file_location)
-	except KeyError:
+				try:
+					file_id = location.split('/')[-1:]
+					file_id_string = ', '.join(file_id)
+					get_file = course.get_file(file_id_string)
+					file_location = get_file.url.split('?')[0]
+					if "audio" in get_file.mime_class:
+						link_name = "Linked Audio File: %s" % get_file.display_name
+						link_media.setdefault(link_name, [])
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(syllabus_location)
+						link_media[link_name].append(file_location)
+					if "video" in get_file.mime_class:
+						link_name = "Linked Video File: %s" % get_file.display_name
+						link_media.setdefault(link_name, [])
+						link_media[link_name].append("Manually Check for Captions")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(syllabus_location)
+						link_media[link_name].append(file_location)
+					if "flash" in get_file.mime_class:
+						link_name = "Linked SWF File: %s" % get_file.display_name
+						link_media.setdefault(link_name, [])
+						link_media[link_name].append("Manually Check for Captions")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(" ")
+						link_media[link_name].append(syllabus_location)
+						link_media[link_name].append(file_location)
+				except:
+					pass
+	except:
 		pass
 #checks all module external URLs and Files in a canvas course for media links
 modules = course.get_modules()
@@ -636,11 +633,9 @@ if modules:
 				try:
 					module_location = item.html_url
 					file_id = item.content_id
-					r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-					data_file = r.json()
-					type = data_file['mime_class']
-					if "audio" in type:
-						link_name = "Linked Audio File: %s" % data_file['filename']
+					get_file = course.get_file(file_id)
+					if "audio" in get_file.mime_class:
+						link_name = "Linked Audio File: %s" % get_file.display_name
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
 						link_media[link_name].append(" ")
@@ -648,8 +643,8 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(module_location)
 						link_media[link_name].append(file_location)
-					if "video" in type:
-						link_name = "Linked Video File: %s" % data_file['filename']
+					if "video" in get_file.mime_class:
+						link_name = "Linked Video File: %s" % get_file.display_name
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
 						link_media[link_name].append(" ")
@@ -657,8 +652,8 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(module_location)
 						link_media[link_name].append(file_location)
-					if "flash" in type:
-						link_name = "Linked SWF File: %s" % data_file['filename']
+					if "flash" in get_file.mime_class:
+						link_name = "Linked SWF File: %s" % get_file.display_name
 						link_media.setdefault(link_name, [])
 						link_media[link_name].append("Manually Check for Captions")
 						link_media[link_name].append(" ")
@@ -666,8 +661,7 @@ if modules:
 						link_media[link_name].append(" ")
 						link_media[link_name].append(module_location)
 						link_media[link_name].append(file_location)
-
-				except KeyError:
+				except:
 					pass
 #checks all announcements in a canvas course for media links
 announce = course.get_discussion_topics(only_announcements=True)
@@ -781,12 +775,11 @@ if announce:
 				if location:
 					try:
 						file_id = location.split('/')[-1:]
-						r = requests.get(api_url + 'courses/%s/files/%s'% (course_id, file_id[0]), headers = {'Authorization': 'Bearer ' + '%s' % api_key})
-						data_file = r.json()
-						file_location = data_file['url'].split('?')[0]
-						type = data_file['mime_class']
-						if "audio" in type:
-							link_name = "Linked Audio File: %s" % data_file['filename']
+						file_id_string = ', '.join(file_id)
+						get_file = course.get_file(file_id_string)
+						file_location = get_file.url.split('?')[0]
+						if "audio" in get_file.mime_class:
+							link_name = "Linked Audio File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -794,8 +787,8 @@ if announce:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(announce_location)
 							link_media[link_name].append(file_location)
-						if "video" in type:
-							link_name = "Linked Video File: %s" %data_file['filename']
+						if "video" in get_file.mime_class:
+							link_name = "Linked Video File: %s" %get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -803,8 +796,8 @@ if announce:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(announce_location)
 							link_media[link_name].append(file_location)
-						if "flash" in type:
-							link_name = "Linked SWF File: %s" % data_file['filename']
+						if "flash" in get_file.mime_class:
+							link_name = "Linked SWF File: %s" % get_file.display_name
 							link_media.setdefault(link_name, [])
 							link_media[link_name].append("Manually Check for Captions")
 							link_media[link_name].append(" ")
@@ -812,7 +805,7 @@ if announce:
 							link_media[link_name].append(" ")
 							link_media[link_name].append(announce_location)
 							link_media[link_name].append(file_location)
-					except KeyError:
+					except:
 						pass
 #Uses YouTube API to check each video for captions
 print "Checking YouTube Captions"
