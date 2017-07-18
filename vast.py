@@ -13,8 +13,6 @@ canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
 print "Checking " + course.name
 writer = csv.writer(open('%s.csv' % course.name, 'wb'))
-captions_multiple = ['1','2']
-set(captions_multiple)
 youtube_link = {}
 vimeo_link = {}
 media_link = {}
@@ -106,7 +104,7 @@ if pages:
 				instructure = video.get('class')
 				media_id = video.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment video_comment':
 						m_link = "Video Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -118,7 +116,7 @@ if pages:
 				instructure = audio.get('class')
 				media_id = audio.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment audio_comment':
 						m_link = "Audio Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -251,7 +249,7 @@ if assign:
 				instructure = video.get('class')
 				media_id = video.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment video_comment':
 						m_link = "Video Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -263,7 +261,7 @@ if assign:
 				instructure = audio.get('class')
 				media_id = audio.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment audio_comment':
 						m_link = "Audio Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -314,7 +312,6 @@ discuss = course.get_discussion_topics()
 if discuss:
 	print "Checking Discussions"
 	for item in discuss:
-	#	print item.message
 		if item.message:
 			discuss_location = item.html_url
 			contents = item.message.encode('utf-8')
@@ -392,7 +389,7 @@ if discuss:
 				instructure = video.get('class')
 				media_id = video.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment video_comment':
 						m_link = "Video Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -404,7 +401,7 @@ if discuss:
 				instructure = audio.get('class')
 				media_id = audio.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':						
+					if media_comment == 'instructure_inline_media_comment audio_comment':						
 						m_link = "Audio Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -593,6 +590,9 @@ if syllabus.syllabus_body:
 					pass
 	except:
 		pass
+
+
+
 #checks all module external URLs and Files in a canvas course for media links
 modules = course.get_modules()
 if modules:
@@ -669,7 +669,6 @@ if announce:
 	print "Checking Announcements"
 	for item in announce:
 		announce_location = item.html_url
-	#	print item.message
 		if item.message:
 			contents = item.message.encode('utf-8')
 			soup = BeautifulSoup (contents, "html.parser")
@@ -749,7 +748,7 @@ if announce:
 				instructure = video.get('class')
 				media_id = video.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment video_comment':
 						m_link = "Video Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -761,7 +760,7 @@ if announce:
 				instructure = audio.get('class')
 				media_id = audio.get('data-media_comment_id')
 				for media_comment in instructure:
-					if media_comment == 'instructure_inline_media_comment':
+					if media_comment == 'instructure_inline_media_comment audio_comment':
 						m_link = "Audio Media Comment %s" % media_id
 						media_link.setdefault(m_link, [])
 						media_link[m_link].append("Manually Check for Captions")
@@ -947,8 +946,7 @@ for link in vimeo_link:
 						vimeo_captions.append('1')
 					else:
 						vimeo_captions.append('2')
-				set(vimeo_captions)
-				if vimeo_captions == captions_multiple:
+				if "1" in vimeo_captions:
 					vimeo_link[link].insert(0, 'Captions in English')
 					vimeo_link[link].insert(1, '')
 					vimeo_link[link].insert(2, '')
@@ -975,6 +973,8 @@ for link in vimeo_link:
 		else:
 			split_link = link.split('/')
 			video_id = split_link[-1]
+			if not video_id:
+				video_id = split_link[-2]
 		try:
 			r = requests.get('https://api.vimeo.com/videos/%s/texttracks' % video_id, headers = {'Authorization': 'Bearer ' + '%s' % vimeo_api_key})
 			data = r.json()
@@ -994,9 +994,7 @@ for link in vimeo_link:
 						vimeo_captions.append('1')
 					else:
 						vimeo_captions.append('2')
-				listset(vimeo_captions)
-				vimeo_captions.sort()
-				if vimeo_captions == captions_multiple:
+				if "1" in vimeo_captions:
 					vimeo_link[link].insert(0, 'Captions in English')
 					vimeo_link[link].insert(1, '')
 					vimeo_link[link].insert(2, '')
