@@ -28,7 +28,7 @@ VAST will identify the following types of media:
     * Films on Demand
     * Alexander Street Press
     * Kanopy
-Note: VAST relies on the mime type of the file provided by Canvas
+*Note: VAST relies on the mime type of the file provided by Canvas
 
 ## Limitations
 * VAST does not check the Quizzes tool
