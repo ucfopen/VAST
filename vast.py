@@ -19,7 +19,7 @@ course_id = input('Enter Canvas ID: ')
 canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
 print('Checking ' + course.name)
-writer = csv.writer(open('%s.csv' % course.name, 'wb'))
+writer = csv.writer(open('{}.csv'.format(course.name), 'wb'))
 youtube_link = {}
 vimeo_link = {}
 media_link = {}
@@ -112,7 +112,7 @@ if pages:
                 media_id = video.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment %s' % media_id
+                        m_link = 'Video Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -124,7 +124,7 @@ if pages:
                 media_id = audio.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment %s' % media_id
+                        m_link = 'Audio Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -141,7 +141,7 @@ if pages:
                         get_file = course.get_file(file_id_string)
                         file_location = get_file.url.split('?')[0]
                         if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: %s' % get_file.display_name
+                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -150,7 +150,7 @@ if pages:
                             link_media[link_name].append(page_location)
                             link_media[link_name].append(file_location)
                         if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: %s' % get_file.display_name
+                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -159,7 +159,7 @@ if pages:
                             link_media[link_name].append(page_location)
                             link_media[link_name].append(file_location)
                         if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: %s' % get_file.display_name
+                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -257,7 +257,7 @@ if assign:
                 media_id = video.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment %s' % media_id
+                        m_link = 'Video Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -269,7 +269,7 @@ if assign:
                 media_id = audio.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment %s' % media_id
+                        m_link = 'Audio Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -286,7 +286,7 @@ if assign:
                         get_file = course.get_file(file_id_string)
                         file_location = get_file.url.split('?')[0]
                         if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: %s' % get_file.display_name
+                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -295,7 +295,7 @@ if assign:
                             link_media[link_name].append(assign_location)
                             link_media[link_name].append(file_location)
                         if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: %s' % get_file.display_name
+                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             media_link[m_link].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -304,7 +304,7 @@ if assign:
                             link_media[link_name].append(assign_location)
                             link_media[link_name].append(file_location)
                         if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: %s' % get_file.display_name
+                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -397,7 +397,7 @@ if discuss:
                 media_id = video.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment %s' % media_id
+                        m_link = 'Video Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -409,7 +409,7 @@ if discuss:
                 media_id = audio.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment %s' % media_id
+                        m_link = 'Audio Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -426,7 +426,7 @@ if discuss:
                         get_file = course.get_file(file_id_string)
                         file_location = get_file.url.split('?')[0]
                         if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: %s' % get_file.display_name
+                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -435,7 +435,7 @@ if discuss:
                             link_media[link_name].append(discuss_location)
                             link_media[link_name].append(file_location)
                         if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: %s' % get_file.display_name
+                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -444,7 +444,7 @@ if discuss:
                             link_media[link_name].append(discuss_location)
                             link_media[link_name].append(file_location)
                         if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: %s' % get_file.display_name
+                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -457,7 +457,7 @@ if discuss:
 # Checks the syllabus in a canvas course for media links
 syllabus = canvas.get_course(course_id, include='syllabus_body')
 if syllabus.syllabus_body:
-    syllabus_location = '%s/%s/assignments/syllabus' % (courses_url, course_id)
+    syllabus_location = '{}/{}/assignments/syllabus'.format(courses_url, course_id)
     print('Checking Syllabus')
     try:
         contents = syllabus.syllabus_body
@@ -539,7 +539,7 @@ if syllabus.syllabus_body:
             media_id = video.get('data-media_comment_id')
             for media_comment in instructure:
                 if media_comment == 'instructure_inline_media_comment':
-                    m_link = 'Video Media Comment %s' % media_id
+                    m_link = 'Video Media Comment {}'.format(media_id)
                     media_link.setdefault(m_link, [])
                     media_link[m_link].append('Manually Check for Captions')
                     media_link[m_link].append('')
@@ -551,7 +551,7 @@ if syllabus.syllabus_body:
             media_id = audio.get('data-media_comment_id')
             for media_comment in instructure:
                 if media_comment == 'instructure_inline_media_comment':
-                    m_link = 'Audio Media Comment %s' % media_id
+                    m_link = 'Audio Media Comment {}'.format(media_id)
                     media_link.setdefault(m_link, [])
                     media_link[m_link].append('Manually Check for Captions')
                     media_link[m_link].append('')
@@ -568,7 +568,7 @@ if syllabus.syllabus_body:
                     get_file = course.get_file(file_id_string)
                     file_location = get_file.url.split('?')[0]
                     if 'audio' in get_file.mime_class:
-                        link_name = 'Linked Audio File: %s' % get_file.display_name
+                        link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('')
                         link_media[link_name].append('')
@@ -576,7 +576,7 @@ if syllabus.syllabus_body:
                         link_media[link_name].append(syllabus_location)
                         link_media[link_name].append(file_location)
                     if 'video' in get_file.mime_class:
-                        link_name = 'Linked Video File: %s' % get_file.display_name
+                        link_name = 'Linked Video File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('Manually Check for Captions')
                         link_media[link_name].append('')
@@ -585,7 +585,7 @@ if syllabus.syllabus_body:
                         link_media[link_name].append(syllabus_location)
                         link_media[link_name].append(file_location)
                     if 'flash' in get_file.mime_class:
-                        link_name = 'Linked SWF File: %s' % get_file.display_name
+                        link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('Manually Check for Captions')
                         link_media[link_name].append('')
@@ -609,7 +609,7 @@ if modules:
             vimeo_embed = []
             library_embed = []
             if item.type == 'ExternalUrl':
-                module_url = '%s/%s/modules/items/%s' % (courses_url, course_id, item.id)
+                module_url = '{}/{}/modules/items/{}'.format(courses_url, course_id, item.id)
                 # href = item.external_url.encode('utf8')
                 href = item.external_url
                 if re.search(youtube_pattern, href):
@@ -641,7 +641,7 @@ if modules:
                     file_id = item.content_id
                     get_file = course.get_file(file_id)
                     if 'audio' in get_file.mime_class:
-                        link_name = 'Linked Audio File: %s' % get_file.display_name
+                        link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('Manually Check for Captions')
                         link_media[link_name].append('')
@@ -650,7 +650,7 @@ if modules:
                         link_media[link_name].append(module_location)
                         link_media[link_name].append(file_location)
                     if 'video' in get_file.mime_class:
-                        link_name = 'Linked Video File: %s' % get_file.display_name
+                        link_name = 'Linked Video File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('Manually Check for Captions')
                         link_media[link_name].append('')
@@ -659,7 +659,7 @@ if modules:
                         link_media[link_name].append(module_location)
                         link_media[link_name].append(file_location)
                     if 'flash' in get_file.mime_class:
-                        link_name = 'Linked SWF File: %s' % get_file.display_name
+                        link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                         link_media.setdefault(link_name, [])
                         link_media[link_name].append('Manually Check for Captions')
                         link_media[link_name].append('')
@@ -756,7 +756,7 @@ if announce:
                 media_id = video.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment %s' % media_id
+                        m_link = 'Video Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -768,7 +768,7 @@ if announce:
                 media_id = audio.get('data-media_comment_id')
                 for media_comment in instructure:
                     if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment %s' % media_id
+                        m_link = 'Audio Media Comment {}'.format(media_id)
                         media_link.setdefault(m_link, [])
                         media_link[m_link].append('Manually Check for Captions')
                         media_link[m_link].append('')
@@ -785,7 +785,7 @@ if announce:
                         get_file = course.get_file(file_id_string)
                         file_location = get_file.url.split('?')[0]
                         if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: %s' % get_file.display_name
+                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -794,7 +794,7 @@ if announce:
                             link_media[link_name].append(announce_location)
                             link_media[link_name].append(file_location)
                         if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: %s' % get_file.display_name
+                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -803,7 +803,7 @@ if announce:
                             link_media[link_name].append(announce_location)
                             link_media[link_name].append(file_location)
                         if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: %s' % get_file.display_name
+                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
                             link_media.setdefault(link_name, [])
                             link_media[link_name].append('Manually Check for Captions')
                             link_media[link_name].append('')
@@ -824,14 +824,18 @@ for key in youtube_link:
             is_ASR = False
             is_standard = False
             try:
-                r = requests.get(google_url + '?part=snippet&videoId=' + item + '&key=' + youtube_key)
+                r = requests.get('{}?part=snippet&videoId={}&key={}'.format(
+                    google_url, item, youtube_key
+                ))
                 data = r.json()
                 if data['items']:
                     for e in data['items']:
-                        if e['snippet']['trackKind'] == 'standard' and e['snippet']['language'] == 'en':
-                            is_standard = True
-                        if e['snippet']['trackKind'] == 'ASR' and e['snippet']['language'] == 'en':
-                            is_ASR = True
+                        if e['snippet']['language'] == 'en':
+                            if e['snippet']['trackKind'] == 'standard':
+                                is_standard = True
+                            if e['snippet']['trackKind'] == 'ASR':
+                                is_ASR = True
+
                     if is_standard is True:
                             youtube_link[key].insert(0, 'Captions found in English')
                             youtube_link[key].insert(1, '')
@@ -839,7 +843,9 @@ for key in youtube_link:
                             youtube_link[key].insert(3, '')
                     if is_standard is False and is_ASR is True:
                         youtube_link[key].insert(0, 'Automatic Captions in English')
-                        r = requests.get(google_video + '?part=contentDetails&id=' + item + '&key=' + youtube_key)
+                        r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
+                            google_video, item, youtube_key
+                        ))
                         data = r.json()
                         for d in data['items']:
                             duration = d['contentDetails']['duration']
@@ -865,7 +871,9 @@ for key in youtube_link:
                                 youtube_link[key].insert(3, duration[2:-1])
                     if is_standard is False and is_ASR is False:
                         youtube_link[key].insert(0, 'No Captions in English')
-                        r = requests.get(google_video + '?part=contentDetails&id=' + item + '&key=' + youtube_key)
+                        r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
+                            google_video, item, youtube_key
+                        ))
                         data = r.json()
                         for d in data['items']:
                             duration = d['contentDetails']['duration']
@@ -938,15 +946,15 @@ for link in vimeo_link:
             video_id = split_link[4]
         try:
             r = requests.get(
-                'https://api.vimeo.com/videos/%s/texttracks' % video_id,
-                headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                'https://api.vimeo.com/videos/{}/texttracks'.format(video_id),
+                headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
             )
             data = r.json()
             if not data['data']:
                 vimeo_link[link].insert(0, 'No Captions')
                 r = requests.get(
-                    'https://api.vimeo.com/videos/%s' % video_id,
-                    headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                    'https://api.vimeo.com/videos/{}'.format(video_id),
+                    headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
@@ -969,8 +977,8 @@ for link in vimeo_link:
                 else:
                     vimeo_link[link].insert(0, 'No English Captions')
                     r = requests.get(
-                        'https://api.vimeo.com/videos/%s' % video_id,
-                        headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                        'https://api.vimeo.com/videos/{}'.format(video_id),
+                        headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
                     )
                     data = r.json()
                     vimeo_duration = data['duration']
@@ -995,15 +1003,15 @@ for link in vimeo_link:
                 video_id = split_link[-2]
         try:
             r = requests.get(
-                'https://api.vimeo.com/videos/%s/texttracks' % video_id,
-                headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                'https://api.vimeo.com/videos/{}/texttracks'.format(video_id),
+                headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
             )
             data = r.json()
             if not data['data']:
                 vimeo_link[link].insert(0, 'No Captions')
                 r = requests.get(
-                    'https://api.vimeo.com/videos/%s' % video_id,
-                    headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                    'https://api.vimeo.com/videos/{}'.format(video_id),
+                    headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
@@ -1026,8 +1034,8 @@ for link in vimeo_link:
                 else:
                     vimeo_link[link].insert(0, 'No English Captions')
                     r = requests.get(
-                        'https://api.vimeo.com/videos/%s' % video_id,
-                        headers={'Authorization': 'Bearer ' + '%s' % vimeo_api_key}
+                        'https://api.vimeo.com/videos/{}'.format(video_id),
+                        headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
                     )
                     data = r.json()
                     vimeo_duration = data['duration']
