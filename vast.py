@@ -12,6 +12,7 @@ from vast_config import (
     api_key, api_url, courses_url, google_url, google_video,
     lib_media_urls, vimeo_api_key, youtube_key, youtube_pattern
 )
+from utils import add_entry
 
 
 start_time = time.time()
@@ -25,6 +26,7 @@ vimeo_link = {}
 media_link = {}
 link_media = {}
 library_media = {}
+
 
 # Checks all pages in a canvas course for media links
 pages = course.get_pages()
@@ -40,7 +42,7 @@ if pages:
             href_href_list = []
             for link in soup.find_all('a'):
                 href_href_list.append(link.get('href'))
-                ###
+
                 location = link.get('data-api-endpoint')
                 if location:
                     try:
@@ -49,46 +51,38 @@ if pages:
                         get_file = course.get_file(file_id_string)
                         file_location = get_file.url.split('?')[0]
                         if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(page_location)
-                            link_media[link_name].append(file_location)
+                            add_entry(
+                                link_media,
+                                'Linked Audio File: {}'.format(get_file.display_name),
+                                'Manually Check for Captions',
+                                page_location,
+                                file_location=file_location
+                            )
                         if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(page_location)
-                            link_media[link_name].append(file_location)
+                            add_entry(
+                                link_media,
+                                'Linked Video File: {}'.format(get_file.display_name),
+                                'Manually Check for Captions',
+                                page_location,
+                                file_location=file_location
+                            )
                         if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(page_location)
-                            link_media[link_name].append(file_location)
+                            add_entry(
+                                link_media,
+                                'Linked SWF File: {}'.format(get_file.display_name),
+                                'Manually Check for Captions',
+                                page_location,
+                                file_location=file_location
+                            )
                     except:
                         pass
-                ###
+
             href_list_filter = filter(None, href_href_list)
 
             for link in href_list_filter:
                 # Matches library media from lib_media_urls
                 if any(match_str in link for match_str in lib_media_urls):
-                    library_media.setdefault(link, [])
-                    library_media[link].append('Manually Check for Captions')
-                    library_media[link].append('')
-                    library_media[link].append('')
-                    library_media[link].append('')
-                    library_media[link].append(page_location)
+                    add_entry(library_media, link, 'Manually Check for Captions', page_location)
                 # Matches YouTube
                 elif re.search(youtube_pattern, link):
                     youtube_link.setdefault(link, [])
@@ -107,12 +101,7 @@ if pages:
             for link in iframe_list_filter:
                 # Matches library media from lib_media_urls
                 if any(match_str in link for match_str in lib_media_urls):
-                    library_media.setdefault(link, [])
-                    library_media[link].append('Manually Check for Captions')
-                    library_media[link].append('')
-                    library_media[link].append('')
-                    library_media[link].append('')
-                    library_media[link].append(page_location)
+                    add_entry(library_media, link, 'Manually Check for Captions', page_location)
                 # Matches YouTube
                 elif re.search(youtube_pattern, link):
                     youtube_link.setdefault(link, [])
@@ -127,24 +116,14 @@ if pages:
                 m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
                 for media_comment in video.get('class'):
                     if media_comment == 'instructure_inline_media_comment video_comment':
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(page_location)
+                        add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
 
             # Process Audio
             for audio in soup.find_all('audio'):
                 m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
                 for media_comment in audio.get('class'):
                     if media_comment == 'instructure_inline_media_comment audio_comment':
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(page_location)
+                        add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
 
 # Checks all assignments in a canvas course for media links
 assign = course.get_assignments()
