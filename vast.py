@@ -29,746 +29,746 @@ library_media = {}
 
 
 # Checks all pages in a canvas course for media links
+print('Checking Pages')
 pages = course.get_pages()
-if pages:
-    print('Checking Pages')
-    for page in pages:
-        page_body = course.get_page(page.url)
-        page_location = page.html_url
-        if page_body.body:
-            contents = page_body.body.encode('utf-8')
-            soup = BeautifulSoup(contents, 'html.parser')
-            # Process Anchor Tags
-            href_href_list = []
-            for link in soup.find_all('a'):
-                href_href_list.append(link.get('href'))
+for page in pages:
+    page_body = course.get_page(page.url)
+    page_location = page.html_url
 
-                location = link.get('data-api-endpoint')
-                if location:
-                    try:
-                        file_id = location.split('/')[-1:]
-                        file_id_string = ', '.join(file_id)
-                        get_file = course.get_file(file_id_string)
-                        file_location = get_file.url.split('?')[0]
-                        if 'audio' in get_file.mime_class:
-                            add_entry(
-                                link_media,
-                                'Linked Audio File: {}'.format(get_file.display_name),
-                                'Manually Check for Captions',
-                                page_location,
-                                file_location=file_location
-                            )
-                        if 'video' in get_file.mime_class:
-                            add_entry(
-                                link_media,
-                                'Linked Video File: {}'.format(get_file.display_name),
-                                'Manually Check for Captions',
-                                page_location,
-                                file_location=file_location
-                            )
-                        if 'flash' in get_file.mime_class:
-                            add_entry(
-                                link_media,
-                                'Linked SWF File: {}'.format(get_file.display_name),
-                                'Manually Check for Captions',
-                                page_location,
-                                file_location=file_location
-                            )
-                    except:
-                        pass
+    if not page_body.body:
+        continue
 
-            href_list_filter = filter(None, href_href_list)
+    contents = page_body.body.encode('utf-8')
+    soup = BeautifulSoup(contents, 'html.parser')
+    # Process Anchor Tags
+    href_href_list = []
+    for link in soup.find_all('a'):
+        href_href_list.append(link.get('href'))
 
-            for link in href_list_filter:
-                # Matches library media from lib_media_urls
-                if any(match_str in link for match_str in lib_media_urls):
-                    add_entry(library_media, link, 'Manually Check for Captions', page_location)
-                # Matches YouTube
-                elif re.search(youtube_pattern, link):
-                    youtube_link.setdefault(link, [])
-                    youtube_link[link].append(page_location)
-                # Matches Vimeo
-                elif 'vimeo.com' in link:
-                    vimeo_link.setdefault(link, [])
-                    vimeo_link[link].append(page_location)
+        location = link.get('data-api-endpoint')
+        try:
+            file_id = location.split('/')[-1:]
+            file_id_string = ', '.join(file_id)
+            get_file = course.get_file(file_id_string)
+            file_location = get_file.url.split('?')[0]
+            if 'audio' in get_file.mime_class:
+                add_entry(
+                    link_media,
+                    'Linked Audio File: {}'.format(get_file.display_name),
+                    'Manually Check for Captions',
+                    page_location,
+                    file_location=file_location
+                )
+            if 'video' in get_file.mime_class:
+                add_entry(
+                    link_media,
+                    'Linked Video File: {}'.format(get_file.display_name),
+                    'Manually Check for Captions',
+                    page_location,
+                    file_location=file_location
+                )
+            if 'flash' in get_file.mime_class:
+                add_entry(
+                    link_media,
+                    'Linked SWF File: {}'.format(get_file.display_name),
+                    'Manually Check for Captions',
+                    page_location,
+                    file_location=file_location
+                )
+        except:
+            pass
 
-            # Process IFrames
-            iframe_list = []
-            for link in soup.find_all('iframe'):
-                iframe_list.append(link.get('src'))
-            iframe_list_filter = filter(None, iframe_list)
+    href_list_filter = filter(None, href_href_list)
 
-            for link in iframe_list_filter:
-                # Matches library media from lib_media_urls
-                if any(match_str in link for match_str in lib_media_urls):
-                    add_entry(library_media, link, 'Manually Check for Captions', page_location)
-                # Matches YouTube
-                elif re.search(youtube_pattern, link):
-                    youtube_link.setdefault(link, [])
-                    youtube_link[link].append(page_location)
-                # Matches Vimeo
-                elif 'vimeo.com' in link:
-                    vimeo_link.setdefault(link, [])
-                    vimeo_link[link].append(page_location)
+    for link in href_list_filter:
+        # Matches library media from lib_media_urls
+        if any(match_str in link for match_str in lib_media_urls):
+            add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches YouTube
+        elif re.search(youtube_pattern, link):
+            youtube_link.setdefault(link, [])
+            youtube_link[link].append(page_location)
+        # Matches Vimeo
+        elif 'vimeo.com' in link:
+            vimeo_link.setdefault(link, [])
+            vimeo_link[link].append(page_location)
 
-            # Process Videos
-            for video in soup.find_all('video'):
-                m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
-                for media_comment in video.get('class'):
-                    if media_comment == 'instructure_inline_media_comment video_comment':
-                        add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+    # Process IFrames
+    iframe_list = []
+    for link in soup.find_all('iframe'):
+        iframe_list.append(link.get('src'))
+    iframe_list_filter = filter(None, iframe_list)
 
-            # Process Audio
-            for audio in soup.find_all('audio'):
-                m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
-                for media_comment in audio.get('class'):
-                    if media_comment == 'instructure_inline_media_comment audio_comment':
-                        add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+    for link in iframe_list_filter:
+        # Matches library media from lib_media_urls
+        if any(match_str in link for match_str in lib_media_urls):
+            add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches YouTube
+        elif re.search(youtube_pattern, link):
+            youtube_link.setdefault(link, [])
+            youtube_link[link].append(page_location)
+        # Matches Vimeo
+        elif 'vimeo.com' in link:
+            vimeo_link.setdefault(link, [])
+            vimeo_link[link].append(page_location)
+
+    # Process Videos
+    for video in soup.find_all('video'):
+        m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
+        for media_comment in video.get('class'):
+            if media_comment == 'instructure_inline_media_comment video_comment':
+                add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+
+    # Process Audio
+    for audio in soup.find_all('audio'):
+        m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
+        for media_comment in audio.get('class'):
+            if media_comment == 'instructure_inline_media_comment audio_comment':
+                add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
 
 # Checks all assignments in a canvas course for media links
+print('Checking Assignments')
 assign = course.get_assignments()
-if assign:
-    print('Checking Assignments')
-    for item in assign:
-        if item.description:
-            assign_location = item.html_url
-            contents = item.description.encode('utf-8')
-            soup = BeautifulSoup(contents, 'html.parser')
-            href_list = []
-            for link in soup.find_all('a'):
-                href_list.append(link.get('href'))
-            href_list_filter = filter(None, href_list)
-            library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
-            for link in library_embed_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_embed_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
-            for link in library_embed_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
-            vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
-            for link in youtube_embed:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(item.html_url)
-            for v_link in vimeo_embed:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(item.html_url)
-                vimeo_link[v_link].append(item.html_url)
-            iframe_list = []
-            for link in soup.find_all('iframe'):
-                iframe_list.append(link.get('src'))
-            iframe_list_filter = filter(None, iframe_list)
-            library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
-            for link in library_iframe_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_iframe_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
-            for link in library_iframe_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(assign_location)
-            youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
-            vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
-            for link in youtube_iframe:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(item.html_url)
-            for v_link in vimeo_iframe:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(item.html_url)
-            for video in soup.find_all('video'):
-                instructure = video.get('class')
-                media_id = video.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(assign_location)
-            for audio in soup.find_all('audio'):
-                instructure = audio.get('class')
-                media_id = audio.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(assign_location)
-            for file_link in soup.find_all('a'):
-                instructure = file_link.get('class')
-                location = file_link.get('data-api-endpoint')
-                if location:
-                    try:
-                        file_id = location.split('/')[-1:]
-                        file_id_string = ', '.join(file_id)
-                        get_file = course.get_file(file_id_string)
-                        file_location = get_file.url.split('?')[0]
-                        if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(assign_location)
-                            link_media[link_name].append(file_location)
-                        if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            media_link[m_link].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(assign_location)
-                            link_media[link_name].append(file_location)
-                        if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(assign_location)
-                            link_media[link_name].append(file_location)
-                    except:
-                        pass
+for item in assign:
+    if not item.description:
+        continue
+
+    assign_location = item.html_url
+    contents = item.description.encode('utf-8')
+    soup = BeautifulSoup(contents, 'html.parser')
+    href_list = []
+    for link in soup.find_all('a'):
+        href_list.append(link.get('href'))
+    href_list_filter = filter(None, href_list)
+    library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
+    for link in library_embed_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_embed_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
+    for link in library_embed_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+    vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
+    for link in youtube_embed:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(item.html_url)
+    for v_link in vimeo_embed:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(item.html_url)
+        vimeo_link[v_link].append(item.html_url)
+    iframe_list = []
+    for link in soup.find_all('iframe'):
+        iframe_list.append(link.get('src'))
+    iframe_list_filter = filter(None, iframe_list)
+    library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
+    for link in library_iframe_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_iframe_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
+    for link in library_iframe_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(assign_location)
+    youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+    vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
+    for link in youtube_iframe:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(item.html_url)
+    for v_link in vimeo_iframe:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(item.html_url)
+    for video in soup.find_all('video'):
+        instructure = video.get('class')
+        media_id = video.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment video_comment':
+                m_link = 'Video Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(assign_location)
+    for audio in soup.find_all('audio'):
+        instructure = audio.get('class')
+        media_id = audio.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment audio_comment':
+                m_link = 'Audio Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(assign_location)
+    for file_link in soup.find_all('a'):
+        instructure = file_link.get('class')
+        location = file_link.get('data-api-endpoint')
+        try:
+            file_id = location.split('/')[-1:]
+            file_id_string = ', '.join(file_id)
+            get_file = course.get_file(file_id_string)
+            file_location = get_file.url.split('?')[0]
+            if 'audio' in get_file.mime_class:
+                link_name = 'Linked Audio File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(assign_location)
+                link_media[link_name].append(file_location)
+            if 'video' in get_file.mime_class:
+                link_name = 'Linked Video File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                media_link[m_link].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(assign_location)
+                link_media[link_name].append(file_location)
+            if 'flash' in get_file.mime_class:
+                link_name = 'Linked SWF File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(assign_location)
+                link_media[link_name].append(file_location)
+        except:
+            pass
 
 # Checks all discuss in a canvas course for media links
+print('Checking Discussions')
 discuss = course.get_discussion_topics()
-if discuss:
-    print('Checking Discussions')
-    for item in discuss:
-        if item.message:
-            discuss_location = item.html_url
-            contents = item.message.encode('utf-8')
-            soup = BeautifulSoup(contents, 'html.parser')
-            href_list = []
-            for link in soup.find_all('a'):
-                href_list.append(link.get('href'))
-            href_list_filter = filter(None, href_list)
-            library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
-            for link in library_embed_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_embed_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
-            for link in library_embed_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
-            vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
-            for link in youtube_embed:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(item.html_url)
-            for v_link in vimeo_embed:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(item.html_url)
-            iframe_list = []
-            for link in soup.find_all('iframe'):
-                iframe_list.append(link.get('src'))
-            iframe_list_filter = filter(None, iframe_list)
-            library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
-            for link in library_iframe_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_iframe_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
-            for link in library_iframe_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(discuss_location)
-            youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
-            vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
-            for v_link in vimeo_iframe:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(item.html_url)
-            for video in soup.find_all('video'):
-                instructure = video.get('class')
-                media_id = video.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(discuss_location)
-            for audio in soup.find_all('audio'):
-                instructure = audio.get('class')
-                media_id = audio.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].apppend(discuss_location)
-            for file_link in soup.find_all('a'):
-                instructure = file_link.get('class')
-                location = file_link.get('data-api-endpoint')
-                if location:
-                    try:
-                        file_id = location.split('/')[-1:]
-                        file_id_string = ', '.join(file_id)
-                        get_file = course.get_file(file_id_string)
-                        file_location = get_file.url.split('?')[0]
-                        if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(discuss_location)
-                            link_media[link_name].append(file_location)
-                        if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(discuss_location)
-                            link_media[link_name].append(file_location)
-                        if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(discuss_location)
-                            link_media[link_name].append(file_location)
-                    except:
-                        pass
+for item in discuss:
+    if not item.message:
+        continue
+
+    discuss_location = item.html_url
+    contents = item.message.encode('utf-8')
+    soup = BeautifulSoup(contents, 'html.parser')
+    href_list = []
+    for link in soup.find_all('a'):
+        href_list.append(link.get('href'))
+    href_list_filter = filter(None, href_list)
+    library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
+    for link in library_embed_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_embed_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
+    for link in library_embed_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+    vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
+    for link in youtube_embed:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(item.html_url)
+    for v_link in vimeo_embed:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(item.html_url)
+    iframe_list = []
+    for link in soup.find_all('iframe'):
+        iframe_list.append(link.get('src'))
+    iframe_list_filter = filter(None, iframe_list)
+    library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
+    for link in library_iframe_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_iframe_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
+    for link in library_iframe_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(discuss_location)
+    youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+    vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
+    for v_link in vimeo_iframe:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(item.html_url)
+    for video in soup.find_all('video'):
+        instructure = video.get('class')
+        media_id = video.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment video_comment':
+                m_link = 'Video Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(discuss_location)
+    for audio in soup.find_all('audio'):
+        instructure = audio.get('class')
+        media_id = audio.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment audio_comment':
+                m_link = 'Audio Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].apppend(discuss_location)
+    for file_link in soup.find_all('a'):
+        instructure = file_link.get('class')
+        location = file_link.get('data-api-endpoint')
+        try:
+            file_id = location.split('/')[-1:]
+            file_id_string = ', '.join(file_id)
+            get_file = course.get_file(file_id_string)
+            file_location = get_file.url.split('?')[0]
+            if 'audio' in get_file.mime_class:
+                link_name = 'Linked Audio File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(discuss_location)
+                link_media[link_name].append(file_location)
+            if 'video' in get_file.mime_class:
+                link_name = 'Linked Video File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(discuss_location)
+                link_media[link_name].append(file_location)
+            if 'flash' in get_file.mime_class:
+                link_name = 'Linked SWF File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(discuss_location)
+                link_media[link_name].append(file_location)
+        except:
+            pass
+
 # Checks the syllabus in a canvas course for media links
+print('Checking Syllabus')
 syllabus = canvas.get_course(course_id, include='syllabus_body')
-if syllabus.syllabus_body:
-    syllabus_location = '{}/{}/assignments/syllabus'.format(courses_url, course_id)
-    print('Checking Syllabus')
-    try:
-        contents = syllabus.syllabus_body
-        soup = BeautifulSoup(contents, 'html.parser')
-        href_list = []
-        for link in soup.find_all('a'):
-            href_list.append(link.get('href'))
-        href_list_filter = filter(None, href_list)
-        library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
-        for link in library_embed_fod:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
-        for link in library_embed_alex:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
-        for link in library_embed_kanopy:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
-        vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
-        for link in youtube_embed:
-            youtube_link.setdefault(link, [])
-            youtube_link[link].append(syllabus_location)
-        for v_link in vimeo_embed:
-            vimeo_link.setdefault(v_link, [])
-            vimeo_link[v_link].append(syllabus_location)
-        iframe_list = []
-        for link in soup.find_all('iframe'):
-            iframe_list.append(link.get('src'))
-        iframe_list_filter = filter(None, iframe_list)
-        library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
-        for link in library_iframe_fod:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
-        for link in library_iframe_alex:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
-        for link in library_iframe_kanopy:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(syllabus_location)
-        youtube_iframe = [s for s in iframe_list if re.search(youtube_pattern, s)]
-        vimeo_iframe = [s for s in iframe_list if 'vimeo.com' in s]
-        for link in youtube_iframe:
-            youtube_link.setdefault(link, [])
-            youtube_link[link].append(syllabus_location)
-        for v_link in vimeo_iframe:
-            vimeo_link.setdefault(v_link, [])
-            vimeo_link[v_link].append(syllabus_location)
-        for video in soup.find_all('video'):
-            instructure = video.get('class')
-            media_id = video.get('data-media_comment_id')
-            for media_comment in instructure:
-                if media_comment == 'instructure_inline_media_comment':
-                    m_link = 'Video Media Comment {}'.format(media_id)
-                    media_link.setdefault(m_link, [])
-                    media_link[m_link].append('Manually Check for Captions')
-                    media_link[m_link].append('')
-                    media_link[m_link].append('')
-                    media_link[m_link].append('')
-                    media_link[m_link].append(syllabus_location)
-        for audio in soup.find_all('audio'):
-            instructure = audio.get('class')
-            media_id = audio.get('data-media_comment_id')
-            for media_comment in instructure:
-                if media_comment == 'instructure_inline_media_comment':
-                    m_link = 'Audio Media Comment {}'.format(media_id)
-                    media_link.setdefault(m_link, [])
-                    media_link[m_link].append('Manually Check for Captions')
-                    media_link[m_link].append('')
-                    media_link[m_link].append('')
-                    media_link[m_link].append('')
-                    media_link[m_link].append(syllabus_location)
-        for file_link in soup.find_all('a'):
-            instructure = file_link.get('class')
-            location = file_link.get('data-api-endpoint')
-            if location:
-                try:
-                    file_id = location.split('/')[-1:]
-                    file_id_string = ', '.join(file_id)
-                    get_file = course.get_file(file_id_string)
-                    file_location = get_file.url.split('?')[0]
-                    if 'audio' in get_file.mime_class:
-                        link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(syllabus_location)
-                        link_media[link_name].append(file_location)
-                    if 'video' in get_file.mime_class:
-                        link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('Manually Check for Captions')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(syllabus_location)
-                        link_media[link_name].append(file_location)
-                    if 'flash' in get_file.mime_class:
-                        link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('Manually Check for Captions')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(syllabus_location)
-                        link_media[link_name].append(file_location)
-                except:
-                    pass
-    except:
-        pass
+syllabus_location = '{}/{}/assignments/syllabus'.format(courses_url, course_id)
+try:
+    contents = syllabus.syllabus_body
+    soup = BeautifulSoup(contents, 'html.parser')
+    href_list = []
+    for link in soup.find_all('a'):
+        href_list.append(link.get('href'))
+    href_list_filter = filter(None, href_list)
+    library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
+    for link in library_embed_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_embed_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
+    for link in library_embed_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+    vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
+    for link in youtube_embed:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(syllabus_location)
+    for v_link in vimeo_embed:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(syllabus_location)
+    iframe_list = []
+    for link in soup.find_all('iframe'):
+        iframe_list.append(link.get('src'))
+    iframe_list_filter = filter(None, iframe_list)
+    library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
+    for link in library_iframe_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_iframe_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
+    for link in library_iframe_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(syllabus_location)
+    youtube_iframe = [s for s in iframe_list if re.search(youtube_pattern, s)]
+    vimeo_iframe = [s for s in iframe_list if 'vimeo.com' in s]
+    for link in youtube_iframe:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(syllabus_location)
+    for v_link in vimeo_iframe:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(syllabus_location)
+    for video in soup.find_all('video'):
+        instructure = video.get('class')
+        media_id = video.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment':
+                m_link = 'Video Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(syllabus_location)
+    for audio in soup.find_all('audio'):
+        instructure = audio.get('class')
+        media_id = audio.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment':
+                m_link = 'Audio Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(syllabus_location)
+    for file_link in soup.find_all('a'):
+        instructure = file_link.get('class')
+        location = file_link.get('data-api-endpoint')
+        try:
+            file_id = location.split('/')[-1:]
+            file_id_string = ', '.join(file_id)
+            get_file = course.get_file(file_id_string)
+            file_location = get_file.url.split('?')[0]
+            if 'audio' in get_file.mime_class:
+                link_name = 'Linked Audio File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(syllabus_location)
+                link_media[link_name].append(file_location)
+            if 'video' in get_file.mime_class:
+                link_name = 'Linked Video File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(syllabus_location)
+                link_media[link_name].append(file_location)
+            if 'flash' in get_file.mime_class:
+                link_name = 'Linked SWF File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(syllabus_location)
+                link_media[link_name].append(file_location)
+        except:
+            pass
+except:
+    pass
 
 # Checks all module external URLs and Files in a canvas course for media links
 modules = course.get_modules()
-if modules:
-    print('Checking Modules')
-    for module in modules:
-        items = module.list_module_items(include='content_details')
-        for item in items:
-            youtube_embed = []
-            vimeo_embed = []
-            library_embed = []
-            if item.type == 'ExternalUrl':
-                module_url = '{}/{}/modules/items/{}'.format(courses_url, course_id, item.id)
-                # href = item.external_url.encode('utf8')
-                href = item.external_url
-                if re.search(youtube_pattern, href):
-                    youtube_embed.append(href)
-                if 'vimeo' in href:
-                    vimeo_embed.append(href)
-                if 'search.alexanderstreet.com' in href:
-                    library_embed.append(href)
-                if 'fod.infobase.com' in href:
-                    library_embed.append(href)
-                if 'kanopystreaming-com' in href:
-                    library_embed.append(href)
-            for y_link in youtube_embed:
-                youtube_link.setdefault(y_link, [])
-                youtube_link[y_link].append(module_url)
-            for v_link in vimeo_embed:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(module_url)
-            for link in library_embed:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(module_url)
-            if item.type == 'File':
-                try:
-                    module_location = item.html_url
-                    file_id = item.content_id
-                    get_file = course.get_file(file_id)
-                    if 'audio' in get_file.mime_class:
-                        link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('Manually Check for Captions')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(module_location)
-                        link_media[link_name].append(file_location)
-                    if 'video' in get_file.mime_class:
-                        link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('Manually Check for Captions')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(module_location)
-                        link_media[link_name].append(file_location)
-                    if 'flash' in get_file.mime_class:
-                        link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                        link_media.setdefault(link_name, [])
-                        link_media[link_name].append('Manually Check for Captions')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append('')
-                        link_media[link_name].append(module_location)
-                        link_media[link_name].append(file_location)
-                except:
-                    pass
+print('Checking Modules')
+for module in modules:
+    items = module.list_module_items(include='content_details')
+    for item in items:
+        youtube_embed = []
+        vimeo_embed = []
+        library_embed = []
+        if item.type == 'ExternalUrl':
+            module_url = '{}/{}/modules/items/{}'.format(courses_url, course_id, item.id)
+            # href = item.external_url.encode('utf8')
+            href = item.external_url
+            if re.search(youtube_pattern, href):
+                youtube_embed.append(href)
+            if 'vimeo' in href:
+                vimeo_embed.append(href)
+            if 'search.alexanderstreet.com' in href:
+                library_embed.append(href)
+            if 'fod.infobase.com' in href:
+                library_embed.append(href)
+            if 'kanopystreaming-com' in href:
+                library_embed.append(href)
+        for y_link in youtube_embed:
+            youtube_link.setdefault(y_link, [])
+            youtube_link[y_link].append(module_url)
+        for v_link in vimeo_embed:
+            vimeo_link.setdefault(v_link, [])
+            vimeo_link[v_link].append(module_url)
+        for link in library_embed:
+            library_media.setdefault(link, [])
+            library_media[link].append('Manually Check for Captions')
+            library_media[link].append('')
+            library_media[link].append('')
+            library_media[link].append('')
+            library_media[link].append(module_url)
+        if item.type == 'File':
+            try:
+                module_location = item.html_url
+                file_id = item.content_id
+                get_file = course.get_file(file_id)
+                if 'audio' in get_file.mime_class:
+                    link_name = 'Linked Audio File: {}'.format(get_file.display_name)
+                    link_media.setdefault(link_name, [])
+                    link_media[link_name].append('Manually Check for Captions')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append(module_location)
+                    link_media[link_name].append(file_location)
+                if 'video' in get_file.mime_class:
+                    link_name = 'Linked Video File: {}'.format(get_file.display_name)
+                    link_media.setdefault(link_name, [])
+                    link_media[link_name].append('Manually Check for Captions')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append(module_location)
+                    link_media[link_name].append(file_location)
+                if 'flash' in get_file.mime_class:
+                    link_name = 'Linked SWF File: {}'.format(get_file.display_name)
+                    link_media.setdefault(link_name, [])
+                    link_media[link_name].append('Manually Check for Captions')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append('')
+                    link_media[link_name].append(module_location)
+                    link_media[link_name].append(file_location)
+            except:
+                pass
 
 # Checks all announcements in a canvas course for media links
+print('Checking Announcements')
 announce = course.get_discussion_topics(only_announcements=True)
-if announce:
-    print('Checking Announcements')
-    for item in announce:
-        announce_location = item.html_url
-        if item.message:
-            contents = item.message.encode('utf-8')
-            soup = BeautifulSoup(contents, 'html.parser')
-            href_list = []
-            for link in soup.find_all('a'):
-                href_list.append(link.get('href'))
-            href_list_filter = filter(None, href_list)
-            library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
-            for link in library_embed_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_embed_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
-            for link in library_embed_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
-            vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
-            for link in youtube_embed:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(announce_location)
-            for v_link in vimeo_embed:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(announce_location)
-            iframe_list = []
-            for link in soup.find_all('iframe'):
-                iframe_list.append(link.get('src'))
-            iframe_list_filter = filter(None, iframe_list)
-            library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
-            for link in library_iframe_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_iframe_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
-            for link in library_iframe_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(announce_location)
-            youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
-            vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
-            for link in youtube_iframe:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(announce_location)
-            for v_link in vimeo_iframe:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(announce_location)
-            for video in soup.find_all('video'):
-                instructure = video.get('class')
-                media_id = video.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment video_comment':
-                        m_link = 'Video Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(announce_location)
-            for audio in soup.find_all('audio'):
-                instructure = audio.get('class')
-                media_id = audio.get('data-media_comment_id')
-                for media_comment in instructure:
-                    if media_comment == 'instructure_inline_media_comment audio_comment':
-                        m_link = 'Audio Media Comment {}'.format(media_id)
-                        media_link.setdefault(m_link, [])
-                        media_link[m_link].append('Manually Check for Captions')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append('')
-                        media_link[m_link].append(announce_location)
-            for file_link in soup.find_all('a'):
-                instructure = file_link.get('class')
-                location = file_link.get('data-api-endpoint')
-                if location:
-                    try:
-                        file_id = location.split('/')[-1:]
-                        file_id_string = ', '.join(file_id)
-                        get_file = course.get_file(file_id_string)
-                        file_location = get_file.url.split('?')[0]
-                        if 'audio' in get_file.mime_class:
-                            link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(announce_location)
-                            link_media[link_name].append(file_location)
-                        if 'video' in get_file.mime_class:
-                            link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(announce_location)
-                            link_media[link_name].append(file_location)
-                        if 'flash' in get_file.mime_class:
-                            link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                            link_media.setdefault(link_name, [])
-                            link_media[link_name].append('Manually Check for Captions')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append('')
-                            link_media[link_name].append(announce_location)
-                            link_media[link_name].append(file_location)
-                    except:
-                        pass
+for item in announce:
+    announce_location = item.html_url
+    if not item.message:
+        continue
+
+    contents = item.message.encode('utf-8')
+    soup = BeautifulSoup(contents, 'html.parser')
+    href_list = []
+    for link in soup.find_all('a'):
+        href_list.append(link.get('href'))
+    href_list_filter = filter(None, href_list)
+    library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
+    for link in library_embed_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_embed_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
+    for link in library_embed_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
+    vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
+    for link in youtube_embed:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(announce_location)
+    for v_link in vimeo_embed:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(announce_location)
+    iframe_list = []
+    for link in soup.find_all('iframe'):
+        iframe_list.append(link.get('src'))
+    iframe_list_filter = filter(None, iframe_list)
+    library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
+    for link in library_iframe_fod:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
+    for link in library_iframe_alex:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
+    for link in library_iframe_kanopy:
+        library_media.setdefault(link, [])
+        library_media[link].append('Manually Check for Captions')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append('')
+        library_media[link].append(announce_location)
+    youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
+    vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
+    for link in youtube_iframe:
+        youtube_link.setdefault(link, [])
+        youtube_link[link].append(announce_location)
+    for v_link in vimeo_iframe:
+        vimeo_link.setdefault(v_link, [])
+        vimeo_link[v_link].append(announce_location)
+    for video in soup.find_all('video'):
+        instructure = video.get('class')
+        media_id = video.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment video_comment':
+                m_link = 'Video Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(announce_location)
+    for audio in soup.find_all('audio'):
+        instructure = audio.get('class')
+        media_id = audio.get('data-media_comment_id')
+        for media_comment in instructure:
+            if media_comment == 'instructure_inline_media_comment audio_comment':
+                m_link = 'Audio Media Comment {}'.format(media_id)
+                media_link.setdefault(m_link, [])
+                media_link[m_link].append('Manually Check for Captions')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append('')
+                media_link[m_link].append(announce_location)
+    for file_link in soup.find_all('a'):
+        instructure = file_link.get('class')
+        location = file_link.get('data-api-endpoint')
+        try:
+            file_id = location.split('/')[-1:]
+            file_id_string = ', '.join(file_id)
+            get_file = course.get_file(file_id_string)
+            file_location = get_file.url.split('?')[0]
+            if 'audio' in get_file.mime_class:
+                link_name = 'Linked Audio File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(announce_location)
+                link_media[link_name].append(file_location)
+            if 'video' in get_file.mime_class:
+                link_name = 'Linked Video File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(announce_location)
+                link_media[link_name].append(file_location)
+            if 'flash' in get_file.mime_class:
+                link_name = 'Linked SWF File: {}'.format(get_file.display_name)
+                link_media.setdefault(link_name, [])
+                link_media[link_name].append('Manually Check for Captions')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append('')
+                link_media[link_name].append(announce_location)
+                link_media[link_name].append(file_location)
+        except:
+                pass
+
 # Uses YouTube API to check each video for captions
 print('Checking YouTube Captions')
 for key in youtube_link:
