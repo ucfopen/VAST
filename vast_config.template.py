@@ -14,4 +14,4 @@ youtube_pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-no
 # Canvas URL/courses e.g. https://example.edu/courses
 courses_url = ''
 
-match_list = ['fod.infobase.com', 'search.alexanderstreet.com', 'kanopystreaming-com']
+lib_media_urls = ['fod.infobase.com', 'search.alexanderstreet.com', 'kanopystreaming-com']
