@@ -10,7 +10,7 @@ from six.moves import input
 
 from vast_config import (
     api_key, api_url, courses_url, google_url, google_video, vimeo_api_key,
-    youtube_key, youtube_pattern
+    youtube_key, youtube_pattern, match_list
 )
 
 
@@ -35,78 +35,56 @@ if pages:
         if page_body.body:
             contents = page_body.body.encode('utf-8')
             soup = BeautifulSoup(contents, 'html.parser')
+
+            # Process Anchor Tags
             href_href_list = []
             for link in soup.find_all('a'):
                 href_href_list.append(link.get('href'))
             href_list_filter = filter(None, href_href_list)
-            library_embed_fod = [s for s in href_list_filter if 'fod.infobase.com' in s]
-            for link in library_embed_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            library_embed_alex = [s for s in href_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_embed_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            library_embed_kanopy = [s for s in href_list_filter if 'kanopystreaming-com' in s]
-            for link in library_embed_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            youtube_embed = [s for s in href_list_filter if re.search(youtube_pattern, s)]
-            vimeo_embed = [s for s in href_list_filter if 'vimeo.com' in s]
-            for link in youtube_embed:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(page_location)
-            for v_link in vimeo_embed:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(page_location)
+
+            for link in href_list_filter:
+                # Matches infobase, alexanderstreet, or kanopy
+                if any(match_str in link for match_str in match_list):
+                    library_media.setdefault(link, [])
+                    library_media[link].append('Manually Check for Captions')
+                    library_media[link].append('')
+                    library_media[link].append('')
+                    library_media[link].append('')
+                    library_media[link].append(page_location)
+                # Matches YouTube
+                elif re.search(youtube_pattern, link):
+                    youtube_link.setdefault(link, [])
+                    youtube_link[link].append(page_location)
+                # Matches Vimeo
+                elif 'vimeo.com' in link:
+                    vimeo_link.setdefault(link, [])
+                    vimeo_link[link].append(page_location)
+
+            # Process IFrames
             iframe_list = []
             for link in soup.find_all('iframe'):
                 iframe_list.append(link.get('src'))
             iframe_list_filter = filter(None, iframe_list)
-            library_iframe_fod = [s for s in iframe_list_filter if 'fod.infobase.com' in s]
-            for link in library_iframe_fod:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            library_iframe_alex = [s for s in iframe_list_filter if 'search.alexanderstreet.com' in s]
-            for link in library_iframe_alex:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            library_iframe_kanopy = [s for s in iframe_list_filter if 'kanopystreaming-com' in s]
-            for link in library_iframe_kanopy:
-                library_media.setdefault(link, [])
-                library_media[link].append('Manually Check for Captions')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append('')
-                library_media[link].append(page_location)
-            youtube_iframe = [s for s in iframe_list_filter if re.search(youtube_pattern, s)]
-            vimeo_iframe = [s for s in iframe_list_filter if 'vimeo.com' in s]
-            for link in youtube_iframe:
-                youtube_link.setdefault(link, [])
-                youtube_link[link].append(page_location)
-            for v_link in vimeo_iframe:
-                vimeo_link.setdefault(v_link, [])
-                vimeo_link[v_link].append(page_location)
+
+            for link in iframe_list_filter:
+                # Matches infobase, alexanderstreet, or kanopy
+                if any(match_str in link for match_str in match_list):
+                    library_media.setdefault(link, [])
+                    library_media[link].append('Manually Check for Captions')
+                    library_media[link].append('')
+                    library_media[link].append('')
+                    library_media[link].append('')
+                    library_media[link].append(page_location)
+                # Matches YouTube
+                elif re.search(youtube_pattern, link):
+                    youtube_link.setdefault(link, [])
+                    youtube_link[link].append(page_location)
+                # Matches Vimeo
+                elif 'vimeo.com' in link:
+                    vimeo_link.setdefault(link, [])
+                    vimeo_link[link].append(page_location)
+
+            # Process Videos
             for video in soup.find_all('video'):
                 instructure = video.get('class')
                 media_id = video.get('data-media_comment_id')
