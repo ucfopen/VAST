@@ -92,17 +92,17 @@ def process_contents(
     href_list_filter = filter(None, href_href_list)
 
     for link in href_list_filter:
-        # Matches library media from lib_media_urls
-        if any(match_str in link for match_str in lib_media_urls):
-            add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches Vimeo
+        if 'vimeo.com' in link:
+            vimeo_link.setdefault(link, [])
+            vimeo_link[link].append(page_location)
         # Matches YouTube
         elif re.search(youtube_pattern, link):
             youtube_link.setdefault(link, [])
             youtube_link[link].append(page_location)
-        # Matches Vimeo
-        elif 'vimeo.com' in link:
-            vimeo_link.setdefault(link, [])
-            vimeo_link[link].append(page_location)
+        # Matches library media from lib_media_urls
+        elif any(match_str in link for match_str in lib_media_urls):
+            add_entry(library_media, link, 'Manually Check for Captions', page_location)
 
     # Process IFrames
     iframe_list = []
@@ -111,17 +111,17 @@ def process_contents(
     iframe_list_filter = filter(None, iframe_list)
 
     for link in iframe_list_filter:
-        # Matches library media from lib_media_urls
-        if any(match_str in link for match_str in lib_media_urls):
-            add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches Vimeo
+        if 'vimeo.com' in link:
+            vimeo_link.setdefault(link, [])
+            vimeo_link[link].append(page_location)
         # Matches YouTube
         elif re.search(youtube_pattern, link):
             youtube_link.setdefault(link, [])
             youtube_link[link].append(page_location)
-        # Matches Vimeo
-        elif 'vimeo.com' in link:
-            vimeo_link.setdefault(link, [])
-            vimeo_link[link].append(page_location)
+        # Matches library media from lib_media_urls
+        elif any(match_str in link for match_str in lib_media_urls):
+            add_entry(library_media, link, 'Manually Check for Captions', page_location)
 
     # Process Videos
     for video in soup.find_all('video'):

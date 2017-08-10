@@ -1,7 +1,6 @@
-from __future__ import print_function, division
+from __future__ import print_function
 import csv
 import re
-import time
 
 from bs4 import BeautifulSoup
 from canvasapi import Canvas
@@ -9,24 +8,23 @@ import requests
 from six.moves import input
 
 from vast_config import (
-    api_key, api_url, courses_url, google_url, google_video,
-    lib_media_urls, vimeo_api_key, youtube_key, youtube_pattern
+    api_key, api_url, courses_url, google_url, google_video, lib_media_urls,
+    vimeo_api_key, youtube_key, youtube_pattern
 )
 from utils import add_entry, process_contents
 
 
-start_time = time.time()
 course_id = input('Enter Canvas ID: ')
 canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
 print('Checking ' + course.name)
 writer = csv.writer(open('{}.csv'.format(course.name), 'wb'))
+
 youtube_link = {}
 vimeo_link = {}
 media_link = {}
 link_media = {}
 library_media = {}
-
 
 # Checks all pages in a canvas course for media links
 print('Checking Pages')
@@ -62,7 +60,6 @@ for item in assign:
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
 
-
 # Checks all discuss in a canvas course for media links
 print('Checking Discussions')
 discuss = course.get_discussion_topics()
@@ -95,10 +92,9 @@ try:
 except:
     pass
 
-
 # Checks all module external URLs and Files in a canvas course for media links
-modules = course.get_modules()
 print('Checking Modules')
+modules = course.get_modules()
 for module in modules:
     items = module.list_module_items(include='content_details')
     for item in items:
@@ -113,12 +109,9 @@ for module in modules:
                 youtube_embed.append(href)
             if 'vimeo' in href:
                 vimeo_embed.append(href)
-            if 'search.alexanderstreet.com' in href:
+            if any(match_str in href for match_str in lib_media_urls):
                 library_embed.append(href)
-            if 'fod.infobase.com' in href:
-                library_embed.append(href)
-            if 'kanopystreaming-com' in href:
-                library_embed.append(href)
+
         for y_link in youtube_embed:
             youtube_link.setdefault(y_link, [])
             youtube_link[y_link].append(module_url)
@@ -126,44 +119,32 @@ for module in modules:
             vimeo_link.setdefault(v_link, [])
             vimeo_link[v_link].append(module_url)
         for link in library_embed:
-            library_media.setdefault(link, [])
-            library_media[link].append('Manually Check for Captions')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append('')
-            library_media[link].append(module_url)
+            add_entry(library_media, link, 'Manually Check for Captions', module_url)
         if item.type == 'File':
             try:
                 module_location = item.html_url
                 file_id = item.content_id
                 get_file = course.get_file(file_id)
+                file_location = get_file.url.split('?')[0]
+
                 if 'audio' in get_file.mime_class:
                     link_name = 'Linked Audio File: {}'.format(get_file.display_name)
-                    link_media.setdefault(link_name, [])
-                    link_media[link_name].append('Manually Check for Captions')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append(module_location)
-                    link_media[link_name].append(file_location)
+                    add_entry(
+                        link_media, link_name, 'Manually Check for Captions',
+                        module_location, file_location=file_location
+                    )
                 if 'video' in get_file.mime_class:
                     link_name = 'Linked Video File: {}'.format(get_file.display_name)
-                    link_media.setdefault(link_name, [])
-                    link_media[link_name].append('Manually Check for Captions')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append(module_location)
-                    link_media[link_name].append(file_location)
+                    add_entry(
+                        link_media, link_name, 'Manually Check for Captions',
+                        module_location, file_location=file_location
+                    )
                 if 'flash' in get_file.mime_class:
                     link_name = 'Linked SWF File: {}'.format(get_file.display_name)
-                    link_media.setdefault(link_name, [])
-                    link_media[link_name].append('Manually Check for Captions')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append('')
-                    link_media[link_name].append(module_location)
-                    link_media[link_name].append(file_location)
+                    add_entry(
+                        link_media, link_name, 'Manually Check for Captions',
+                        module_location, file_location=file_location
+                    )
             except:
                 pass
 
@@ -207,10 +188,8 @@ for key in youtube_link:
                                 is_ASR = True
 
                     if is_standard is True:
-                            youtube_link[key].insert(0, 'Captions found in English')
-                            youtube_link[key].insert(1, '')
-                            youtube_link[key].insert(2, '')
-                            youtube_link[key].insert(3, '')
+                        youtube_link[key] = ['Captions found in English', '', '', ''] + youtube_link[key]
+
                     if is_standard is False and is_ASR is True:
                         youtube_link[key].insert(0, 'Automatic Captions in English')
                         r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
@@ -433,9 +412,3 @@ for key, value in link_media.items():
     writer.writerow([key] + value)
 for key, value in library_media.items():
     writer.writerow([key] + value)
-done = time.time() - start_time
-if done > 60:
-    new_done = done // 60
-    print('This request took ' + str(new_done) + ' minutes')
-else:
-    print('This request took ' + str(done) + ' seconds')
