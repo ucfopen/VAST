@@ -169,6 +169,7 @@ print('Checking YouTube Captions')
 for key in youtube_link:
     if 'playlist' in key:
         youtube_link[key].insert(0, 'this is a playlist, check individual videos')
+        # TODO: continue then drop else?
     else:
         video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
         for item in video_id:
@@ -200,19 +201,19 @@ for key in youtube_link:
                             duration = d['contentDetails']['duration']
                             if 'H' in duration:
                                 hour, min_org = duration.split('H')
-                                min, sec = min_org.split('M')
+                                minute, sec = min_org.split('M')
                                 youtube_link[key].insert(1, hour[2:])
-                                youtube_link[key].insert(2, min)
+                                youtube_link[key].insert(2, minute)
                                 youtube_link[key].insert(3, sec[:-1])
                             elif 'M' in duration:
-                                min, sec = duration.split('M')
-                                if min is None:
+                                minute, sec = duration.split('M')
+                                if minute is None:
                                     youtube_link[key].insert(1, '0')
                                     youtube_link[key].insert(2, '0')
                                     youtube_link[key].insert(3, sec[:-1])
                                 else:
                                     youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, min[2:])
+                                    youtube_link[key].insert(2, minute[2:])
                                     youtube_link[key].insert(3, sec[:-1])
                             else:
                                 youtube_link[key].insert(1, '0')
@@ -228,29 +229,29 @@ for key in youtube_link:
                             duration = d['contentDetails']['duration']
                             if 'H' in duration:
                                 hour, min_org = duration.split('H')
-                                min, sec = min_org.split('M')
+                                minute, sec = min_org.split('M')
                                 youtube_link[key].insert(1, hour[2:])
-                                youtube_link[key].insert(2, min)
+                                youtube_link[key].insert(2, minute)
                                 youtube_link[key].insert(3, sec[:-1])
                             elif 'M' in duration:
-                                min, sec = duration.split('M')
-                                if min is None:
+                                minute, sec = duration.split('M')
+                                if minute is None:
                                     youtube_link[key].insert(1, '0')
                                     youtube_link[key].insert(2, '0')
                                     youtube_link[key].insert(3, sec[:-1])
                                 else:
                                     youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, min[2:])
+                                    youtube_link[key].insert(2, minute[2:])
                                     youtube_link[key].insert(3, sec[:-1])
                             else:
                                 youtube_link[key].insert(1, '0')
                                 youtube_link[key].insert(2, '0')
                                 youtube_link[key].insert(3, duration[2:-1])
-                if not data['items']:
+                else:
                     youtube_link[key].insert(0, 'No Captions')
                     r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
-                        google_video, item, youtube_key)
-                    )
+                        google_video, item, youtube_key
+                    ))
                     data = r.json()
                     for d in data['items']:
                         duration = d['contentDetails']['duration']
@@ -319,12 +320,8 @@ for link in vimeo_link:
                     else:
                         vimeo_captions.append('2')
                 if '1' in vimeo_captions:
-                    vimeo_link[link].insert(0, 'Captions in English')
-                    vimeo_link[link].insert(1, '')
-                    vimeo_link[link].insert(2, '')
-                    vimeo_link[link].insert(3, '')
+                    vimeo_link[link] = ['Captions in English', '', '', ''] + vimeo_link[link]
                 else:
-                    vimeo_link[link].insert(0, 'No English Captions')
                     r = requests.get(
                         'https://api.vimeo.com/videos/{}'.format(video_id),
                         headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
@@ -333,14 +330,10 @@ for link in vimeo_link:
                     vimeo_duration = data['duration']
                     hour, remainder = divmod(vimeo_duration, 3600)
                     minute, second = divmod(remainder, 60)
-                    vimeo_link[link].insert(1, hour)
-                    vimeo_link[link].insert(2, minute)
-                    vimeo_link[link].insert(3, second)
+                    vimeo_link[link] = ['No English Captions', hour, minute, second] + vimeo_link[link]
+
         except KeyError:
-            vimeo_link[link].insert(0, 'Unable to Vimeo Check Video')
-            vimeo_link[link].insert(1, '')
-            vimeo_link[link].insert(2, '')
-            vimeo_link[link].insert(3, '')
+            vimeo_link[link] = ['Unable to Vimeo Check Video', '', '', ''] + vimeo_link[link]
     else:
         if 'review' in link:
             split_link = link.split('/')
