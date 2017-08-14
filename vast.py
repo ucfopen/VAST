@@ -169,86 +169,30 @@ print('Checking YouTube Captions')
 for key in youtube_link:
     if 'playlist' in key:
         youtube_link[key].insert(0, 'this is a playlist, check individual videos')
-        # TODO: continue then drop else?
-    else:
-        video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
-        for item in video_id:
-            is_ASR = False
-            is_standard = False
-            try:
-                r = requests.get('{}?part=snippet&videoId={}&key={}'.format(
-                    google_url, item, youtube_key
-                ))
-                data = r.json()
-                if data['items']:
-                    for e in data['items']:
-                        if e['snippet']['language'] == 'en':
-                            if e['snippet']['trackKind'] == 'standard':
-                                is_standard = True
-                            if e['snippet']['trackKind'] == 'ASR':
-                                is_ASR = True
+        continue
 
-                    if is_standard is True:
-                        youtube_link[key] = ['Captions found in English', '', '', ''] + youtube_link[key]
+    video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
+    for item in video_id:
+        is_ASR = False
+        is_standard = False
+        try:
+            r = requests.get('{}?part=snippet&videoId={}&key={}'.format(
+                google_url, item, youtube_key
+            ))
+            data = r.json()
+            if data['items']:
+                for e in data['items']:
+                    if e['snippet']['language'] == 'en':
+                        if e['snippet']['trackKind'] == 'standard':
+                            is_standard = True
+                        if e['snippet']['trackKind'] == 'ASR':
+                            is_ASR = True
 
-                    if is_standard is False and is_ASR is True:
-                        youtube_link[key].insert(0, 'Automatic Captions in English')
-                        r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
-                            google_video, item, youtube_key
-                        ))
-                        data = r.json()
-                        for d in data['items']:
-                            duration = d['contentDetails']['duration']
-                            if 'H' in duration:
-                                hour, min_org = duration.split('H')
-                                minute, sec = min_org.split('M')
-                                youtube_link[key].insert(1, hour[2:])
-                                youtube_link[key].insert(2, minute)
-                                youtube_link[key].insert(3, sec[:-1])
-                            elif 'M' in duration:
-                                minute, sec = duration.split('M')
-                                if minute is None:
-                                    youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, '0')
-                                    youtube_link[key].insert(3, sec[:-1])
-                                else:
-                                    youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, minute[2:])
-                                    youtube_link[key].insert(3, sec[:-1])
-                            else:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, '0')
-                                youtube_link[key].insert(3, duration[2:-1])
-                    if is_standard is False and is_ASR is False:
-                        youtube_link[key].insert(0, 'No Captions in English')
-                        r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
-                            google_video, item, youtube_key
-                        ))
-                        data = r.json()
-                        for d in data['items']:
-                            duration = d['contentDetails']['duration']
-                            if 'H' in duration:
-                                hour, min_org = duration.split('H')
-                                minute, sec = min_org.split('M')
-                                youtube_link[key].insert(1, hour[2:])
-                                youtube_link[key].insert(2, minute)
-                                youtube_link[key].insert(3, sec[:-1])
-                            elif 'M' in duration:
-                                minute, sec = duration.split('M')
-                                if minute is None:
-                                    youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, '0')
-                                    youtube_link[key].insert(3, sec[:-1])
-                                else:
-                                    youtube_link[key].insert(1, '0')
-                                    youtube_link[key].insert(2, minute[2:])
-                                    youtube_link[key].insert(3, sec[:-1])
-                            else:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, '0')
-                                youtube_link[key].insert(3, duration[2:-1])
-                else:
-                    youtube_link[key].insert(0, 'No Captions')
+                if is_standard is True:
+                    youtube_link[key] = ['Captions found in English', '', '', ''] + youtube_link[key]
+
+                if is_standard is False and is_ASR is True:
+                    youtube_link[key].insert(0, 'Automatic Captions in English')
                     r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
                         google_video, item, youtube_key
                     ))
@@ -257,30 +201,86 @@ for key in youtube_link:
                         duration = d['contentDetails']['duration']
                         if 'H' in duration:
                             hour, min_org = duration.split('H')
-                            min, sec = min_org.split('M')
+                            minute, sec = min_org.split('M')
                             youtube_link[key].insert(1, hour[2:])
-                            youtube_link[key].insert(2, min)
+                            youtube_link[key].insert(2, minute)
                             youtube_link[key].insert(3, sec[:-1])
                         elif 'M' in duration:
-                            min, sec = duration.split('M')
-                            if min is None:
+                            minute, sec = duration.split('M')
+                            if minute is None:
                                 youtube_link[key].insert(1, '0')
                                 youtube_link[key].insert(2, '0')
                                 youtube_link[key].insert(3, sec[:-1])
                             else:
                                 youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, min[2:])
+                                youtube_link[key].insert(2, minute[2:])
                                 youtube_link[key].insert(3, sec[:-1])
                         else:
                             youtube_link[key].insert(1, '0')
                             youtube_link[key].insert(2, '0')
                             youtube_link[key].insert(3, duration[2:-1])
+                if is_standard is False and is_ASR is False:
+                    youtube_link[key].insert(0, 'No Captions in English')
+                    r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
+                        google_video, item, youtube_key
+                    ))
+                    data = r.json()
+                    for d in data['items']:
+                        duration = d['contentDetails']['duration']
+                        if 'H' in duration:
+                            hour, min_org = duration.split('H')
+                            minute, sec = min_org.split('M')
+                            youtube_link[key].insert(1, hour[2:])
+                            youtube_link[key].insert(2, minute)
+                            youtube_link[key].insert(3, sec[:-1])
+                        elif 'M' in duration:
+                            minute, sec = duration.split('M')
+                            if minute is None:
+                                youtube_link[key].insert(1, '0')
+                                youtube_link[key].insert(2, '0')
+                                youtube_link[key].insert(3, sec[:-1])
+                            else:
+                                youtube_link[key].insert(1, '0')
+                                youtube_link[key].insert(2, minute[2:])
+                                youtube_link[key].insert(3, sec[:-1])
+                        else:
+                            youtube_link[key].insert(1, '0')
+                            youtube_link[key].insert(2, '0')
+                            youtube_link[key].insert(3, duration[2:-1])
+            else:
+                youtube_link[key].insert(0, 'No Captions')
+                r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
+                    google_video, item, youtube_key
+                ))
+                data = r.json()
+                for d in data['items']:
+                    duration = d['contentDetails']['duration']
+                    if 'H' in duration:
+                        hour, min_org = duration.split('H')
+                        min, sec = min_org.split('M')
+                        youtube_link[key].insert(1, hour[2:])
+                        youtube_link[key].insert(2, min)
+                        youtube_link[key].insert(3, sec[:-1])
+                    elif 'M' in duration:
+                        min, sec = duration.split('M')
+                        if min is None:
+                            youtube_link[key].insert(1, '0')
+                            youtube_link[key].insert(2, '0')
+                            youtube_link[key].insert(3, sec[:-1])
+                        else:
+                            youtube_link[key].insert(1, '0')
+                            youtube_link[key].insert(2, min[2:])
+                            youtube_link[key].insert(3, sec[:-1])
+                    else:
+                        youtube_link[key].insert(1, '0')
+                        youtube_link[key].insert(2, '0')
+                        youtube_link[key].insert(3, duration[2:-1])
 
-            except KeyError:
-                youtube_link[key].insert(0, 'Unable to Check Youtube Video')
-                youtube_link[key].insert(1, '')
-                youtube_link[key].insert(2, '')
-                youtube_link[key].insert(3, '')
+        except KeyError:
+            youtube_link[key].insert(0, 'Unable to Check Youtube Video')
+            youtube_link[key].insert(1, '')
+            youtube_link[key].insert(2, '')
+            youtube_link[key].insert(3, '')
 
 # Uses Vimeo API to check videos for captions
 print('Checking Vimeo Captions')
