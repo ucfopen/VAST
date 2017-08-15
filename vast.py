@@ -167,7 +167,7 @@ for item in announce:
 # Uses YouTube API to check each video for captions
 print('Checking YouTube Captions')
 for key in youtube_link:
-    if 'playlist' in key:
+    if 'list' in key:
         youtube_link[key].insert(0, 'this is a playlist, check individual videos')
         continue
 
