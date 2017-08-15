@@ -17,7 +17,7 @@ VAST is a Python script that searches an Instructure Canvas course for media and
     * courses_url (e.g. https://example.instructure.com/courses)
 
 ## Testing
-A free test course is provided in Canvas Commons. Search for VAST Test Course in Canvas Commons. Directions for searching Canvas Commons are located at https://community.canvaslms.com/docs/DOC-11177-38287725291
+A free test course is provided in Canvas Commons. Search for **VAST Test Course** in Canvas Commons. Directions for searching Canvas Commons are located at https://community.canvaslms.com/docs/DOC-11177-38287725291
 
 ## Types of Media
 VAST will identify the following types of media:
