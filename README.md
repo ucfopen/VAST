@@ -35,7 +35,8 @@ VAST will identify the following types of media:
 
 ## Customization of Video Provider Links
 Update the lib_media_urls list in the vast_config.py file to include additional sources of video. These links will be contained in the report and not checked automatically for captions. For instance, to check any videos from daily motion, add 'dailymotion.com' to the end of the list.
-**Example**: lib_media_urls = ['fod.infobase.com', 'search.alexanderstreet.com', 'kanopystreaming-com', **'dailymotion.com'**]
+
+* **Example**: lib_media_urls = ['fod.infobase.com', 'search.alexanderstreet.com', 'kanopystreaming-com', **'dailymotion.com'**]
 
 ## Limitations
 * VAST does not check the Quizzes tool
