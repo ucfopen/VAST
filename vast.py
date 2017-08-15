@@ -56,7 +56,7 @@ for item in assign:
     soup = BeautifulSoup(contents, 'html.parser')
 
     process_contents(
-        soup, course, page_location,
+        soup, course, assign_location,
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
 
@@ -72,7 +72,7 @@ for item in discuss:
     soup = BeautifulSoup(contents, 'html.parser')
 
     process_contents(
-        soup, course, page_location,
+        soup, course, discuss_location,
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
 
@@ -86,7 +86,7 @@ try:
     soup = BeautifulSoup(contents, 'html.parser')
 
     process_contents(
-        soup, course, page_location,
+        soup, course, syllabus_location,
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
 except:
@@ -160,7 +160,7 @@ for item in announce:
     soup = BeautifulSoup(contents, 'html.parser')
 
     process_contents(
-        soup, course, page_location,
+        soup, course, announce_location,
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
 
