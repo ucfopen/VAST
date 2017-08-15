@@ -169,6 +169,9 @@ print('Checking YouTube Captions')
 for key in youtube_link:
     if 'list' in key:
         youtube_link[key].insert(0, 'this is a playlist, check individual videos')
+        youtube_link[key].insert(1, '')
+        youtube_link[key].insert(2, '')
+        youtube_link[key].insert(3, '')
         continue
 
     video_id = re.findall(youtube_pattern, key, re.MULTILINE | re.IGNORECASE)
