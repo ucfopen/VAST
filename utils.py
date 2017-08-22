@@ -127,12 +127,12 @@ def process_contents(
     for video in soup.find_all('video'):
         m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
         for media_comment in video.get('class'):
-            if media_comment == 'instructure_inline_media_comment video_comment':
+            if media_comment == 'instructure_inline_media_comment':
                 add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
 
     # Process Audio
     for audio in soup.find_all('audio'):
         m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
         for media_comment in audio.get('class'):
-            if media_comment == 'instructure_inline_media_comment audio_comment':
+            if media_comment == 'instructure_inline_media_comment':
                 add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
