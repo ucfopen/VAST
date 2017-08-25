@@ -52,3 +52,11 @@ VAST is designed to be used as a desktop utility on Mac or Linux. To run on Wind
 3. Type "python vast.py"
 4. Enter the Canvas course id number e.g.(**1234567** from https://example.instructure.com/courses/**1234567**)
 5. The report will be saved in the same directory as the vast.py script. The file name will be the course name.
+
+## Contributors
+
+Project Lead
+John Raible
+
+Contributors
+Matt Emond
