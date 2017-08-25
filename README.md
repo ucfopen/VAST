@@ -55,8 +55,8 @@ VAST is designed to be used as a desktop utility on Mac or Linux. To run on Wind
 
 ## Contributors
 
-## Project Lead
+### Project Lead
 * John Raible
 
-## Contributors
+### Contributors
 * Matt Emond
