@@ -12,7 +12,7 @@ VAST is a Python script that searches an Instructure Canvas course for media and
 ## Installation
 
 * Install all dependencies by using `pip install -r requirements.txt`
-* Make sure `vast.py` and `vast_config.py` are in same directory
+* Copy `vast_config.template.py` to `vast_config.py`
 * Set the configuration variables in `vast_config.py`:
     * **api_key** - Canvas API Key. To scan a course you're not enrolled in, you'll needs a sub-account or admin level key
     * **api_url** - Canvas URL and API e.g. `https://example.instructure.com/api/v1/`
