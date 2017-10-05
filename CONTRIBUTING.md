@@ -70,6 +70,7 @@ This section is mainly for the project managers, but is here for documentation p
 
 
 ### Pictures to really drive it home
+
 ```
   ┌───────────┐    ┌───────────┐    ┌───────────┐
   |           |    |           |    |           |
