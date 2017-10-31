@@ -1,0 +1,6 @@
+__pycache__/
+*.csv
+*.pyc
+vast_config.py
+venv/
+venv3/
