@@ -128,11 +128,19 @@ def process_contents(
         m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
         for media_comment in video.get('class'):
             if media_comment == 'instructure_inline_media_comment':
-                add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+                track = soup.find_all('track')
+                if track:
+                    add_entry(media_link, m_link, 'Captions', page_location)
+                else:
+                    add_entry(media_link, m_link, 'No Captions', page_location)
 
     # Process Audio
     for audio in soup.find_all('audio'):
         m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
         for media_comment in audio.get('class'):
             if media_comment == 'instructure_inline_media_comment':
-                add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+                track = soup.find_all('track')
+                if track:
+                    add_entry(media_link, m_link, 'Captions', page_location)
+                else:
+                    add_entry(media_link, m_link, 'No Captions', page_location)
