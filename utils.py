@@ -125,22 +125,34 @@ def process_contents(
 
     # Process Videos
     for video in soup.find_all('video'):
-        m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
-        for media_comment in video.get('class'):
-            if media_comment == 'instructure_inline_media_comment':
-                track = soup.find_all('track')
-                if track:
-                    add_entry(media_link, m_link, 'Captions', page_location)
-                else:
-                    add_entry(media_link, m_link, 'No Captions', page_location)
+        if video.get('data-media_comment_id'):
+			m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
+			for media_comment in video.get('class'):
+				track = soup.find_all('track')
+				if track:
+					add_entry(media_link, m_link, 'Captions', page_location)
+				else:
+					add_entry(media_link, m_link, 'No Captions', page_location)
+
+    #Process Canvas Embedded Video
+    for embed in soup.find_all('source'):
+        media_type = embed.get('type')
+        if media_type == 'video/mp4' in media_type:
+            media_url = embed.get('src')
+            m_link = 'Embedded Canvas Video {}'.format(media_url)
+            add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
+
 
     # Process Audio
     for audio in soup.find_all('audio'):
-        m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
-        for media_comment in audio.get('class'):
-            if media_comment == 'instructure_inline_media_comment':
+        if audio.get('data-media_comment_id'):
+            m_link = 'Audio Media Comment {}'.format(audio.get('data-media_comment_id'))
+            for media_comment in audio.get('class'):
                 track = soup.find_all('track')
                 if track:
                     add_entry(media_link, m_link, 'Captions', page_location)
                 else:
                     add_entry(media_link, m_link, 'No Captions', page_location)
+        else:
+            m_link = 'Embedded Canvas Audio {}'.format(audio.get('src'))
+            add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
