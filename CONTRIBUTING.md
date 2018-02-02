@@ -66,7 +66,7 @@ This section is mainly for the project managers, but is here for documentation p
 * Naming convention: `v1.2.10` using [SEMVER](http://semver.org/)
 * Each release gets a tag after it's merged into master
 * Write a [release doc for Github](https://help.github.com/articles/creating-releases/)
-* It is suggested that you sign release tags for extra trust ([git tag](https://git-scm.com/book/tr/v2/Git-Tools-Signing-Your-Work)) and ([using keybase gpg keys](https://***REMOVED***/snippets/103))
+* It is suggested that you sign release tags for extra trust ([git tag](https://git-scm.com/book/tr/v2/Git-Tools-Signing-Your-Work))
 
 
 ### Pictures to really drive it home
