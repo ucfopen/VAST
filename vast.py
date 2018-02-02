@@ -89,7 +89,7 @@ try:
         soup, course, syllabus_location,
         youtube_link, vimeo_link, media_link, link_media, library_media
     )
-except:
+except Exception:
     pass
 
 # Checks all module external URLs and Files in a canvas course for media links
@@ -145,7 +145,7 @@ for module in modules:
                         link_media, link_name, 'Manually Check for Captions',
                         module_location, file_location=file_location
                     )
-            except:
+            except Exception:
                 pass
 
 # Checks all announcements in a canvas course for media links
@@ -192,8 +192,8 @@ for key in youtube_link:
                             is_standard = True
                         if e['snippet']['trackKind'] == 'ASR':
                             is_ASR = True
-               
-                if not "en" in caption_language:
+
+                if "en" not in caption_language:
                     is_english = False
 
                 if is_standard is True and is_english is True:
@@ -227,7 +227,7 @@ for key in youtube_link:
                             youtube_link[key].insert(1, '0')
                             youtube_link[key].insert(2, '0')
                             youtube_link[key].insert(3, duration[2:-1])
-                    
+
                 if is_english is False:
                     youtube_link[key].insert(0, 'No Captions in English')
                     r = requests.get('{}?part=contentDetails&id={}&key={}'.format(

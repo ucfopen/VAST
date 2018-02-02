@@ -86,7 +86,7 @@ def process_contents(
                     page_location,
                     file_location=file_location
                 )
-        except:
+        except Exception:
             pass
 
     href_list_filter = filter(None, href_href_list)
@@ -126,22 +126,21 @@ def process_contents(
     # Process Videos
     for video in soup.find_all('video'):
         if video.get('data-media_comment_id'):
-			m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
-			for media_comment in video.get('class'):
-				track = soup.find_all('track')
-				if track:
-					add_entry(media_link, m_link, 'Captions', page_location)
-				else:
-					add_entry(media_link, m_link, 'No Captions', page_location)
+            m_link = 'Video Media Comment {}'.format(video.get('data-media_comment_id'))
+            for media_comment in video.get('class'):
+                track = soup.find_all('track')
+                if track:
+                    add_entry(media_link, m_link, 'Captions', page_location)
+                else:
+                    add_entry(media_link, m_link, 'No Captions', page_location)
 
-    #Process Canvas Embedded Video
+    # Process Canvas Embedded Video
     for embed in soup.find_all('source'):
         media_type = embed.get('type')
         if media_type == 'video/mp4' in media_type:
             media_url = embed.get('src')
             m_link = 'Embedded Canvas Video {}'.format(media_url)
             add_entry(media_link, m_link, 'Manually Check for Captions', page_location)
-
 
     # Process Audio
     for audio in soup.find_all('audio'):
