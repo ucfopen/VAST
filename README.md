@@ -44,10 +44,6 @@ VAST will identify the following types of media:
 * VAST can not determine if captions exist on video files, audio files, flash files, media comments, or video providers. The report will list the location of the file to check manually and provide a download link. Make sure to be logged into Canvas first; unless the download link will not work.
 * VAST may not be able to check all YouTube or Vimeo videos for captions. If it can't, the report will note so.
 
-## Windows Compatibility
-
-VAST is designed to be used as a desktop utility on Mac or Linux. To run on Windows, backslashes will have be changed to forwardslashes in the the file paths.
-
 ## Use
 
 1. Open up a terminal window
