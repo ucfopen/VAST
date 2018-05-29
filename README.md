@@ -35,14 +35,19 @@ VAST will identify the following types of media:
     * Films on Demand
     * Alexander Street Press
     * Kanopy
+* Custom links can be added/removed to the `lib_media_urls` list in the `vast_config.py`
 
 **Note**: VAST relies on the mime type of the file provided by Canvas
 
 ## Limitations
 
 * VAST does not check the Quizzes tool
-* VAST can not determine if captions exist on video files, audio files, flash files, media comments, or video providers. The report will list the location of the file to check manually and provide a download link. Make sure to be logged into Canvas first; unless the download link will not work.
+* VAST can not determine if captions exist on video files, audio files, flash files, or video providers. The report will list the location of the file to check manually and provide a download link. Make sure to be logged into Canvas first; unless the download link will not work.
 * VAST may not be able to check all YouTube or Vimeo videos for captions. If it can't, the report will note so.
+
+## Testing
+
+A testing course is available in [Canvas Commons](https://lor.instructure.com/). Use the search term `Vast Test Course`.
 
 ## Use
 
@@ -54,7 +59,7 @@ VAST will identify the following types of media:
 
 ## Contributors
 
-### Project Lead
+### Creator
 
 * John Raible
 
