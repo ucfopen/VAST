@@ -96,7 +96,7 @@ except Exception:
 print('Checking Modules')
 modules = course.get_modules()
 for module in modules:
-    items = module.list_module_items(include='content_details')
+    items = module.get_module_items(include='content_details')
     for item in items:
         youtube_embed = []
         vimeo_embed = []
