@@ -21,7 +21,7 @@ VAST is a Python script that searches an Instructure Canvas course for media and
     * **courses_url** - e.g. `https://example.instructure.com/courses`
 
 ### Google/YouTube API Key
-In order for UDOIT to scan YouTube videos for closed captioning, you will need to create a YouTube Data API key.  Follow the instructions below:
+In order for VAST to scan YouTube videos for closed captioning, you will need to create a YouTube Data API key.  Follow the instructions below:
 
 1. Go to the [Google Developer Console](https://console.developers.google.com).
 2. Create a project.
@@ -29,7 +29,7 @@ In order for UDOIT to scan YouTube videos for closed captioning, you will need t
 4. Create an ***API key*** credential.
 
 ### Vimeo API Key
-In order for UDOIT to scan Vimeo videos for closed captioning, you will need to create a Vimeo API key. Follow the instructions below:
+In order for VAST to scan Vimeo videos for closed captioning, you will need to create a Vimeo API key. Follow the instructions below:
 
 1. [Create a new App on Vimeo Developer API](https://developer.vimeo.com/apps/new?source=getting-started), please note you must have a Vimeo Developer account.
 2. On your application's "Authentication" page, Generate a new Access Token.  (Select the `Public` and `Private` checkboxes for Scopes.)
