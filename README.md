@@ -15,7 +15,7 @@ VAST is a Python script that searches an Instructure Canvas course for media and
 * Copy `vast_config.template.py` to `vast_config.py`
 * Set the configuration variables in `vast_config.py`:
     * **api_key** - Canvas API Key. To scan a course you're not enrolled in, you'll needs a sub-account or admin level key
-    * **api_url** - Canvas URL and API e.g. `https://example.instructure.com/api/v1/`
+    * **api_url** - Canvas URL and API e.g. `https://example.instructure.com`
     * **youtube_key**
     * **vimeo_api_key**
     * **courses_url** - e.g. `https://example.instructure.com/courses`

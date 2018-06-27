@@ -1,6 +1,6 @@
 # Canvas API Key
 api_key = ''
-# Canvas URL e.g. https://myinstitution.instructure.com
+# Canvas URL e.g. https://example.instructure.com
 api_url = ''
 
 youtube_key = ''
