@@ -1,3 +1,5 @@
+[![Join UCF Open Slack Discussions](https://ucf-open-slackin.herokuapp.com/badge.svg)](https://ucf-open-slackin.herokuapp.com/)
+
 # VAST (Video Accessibility Scanning Tool)
 
 VAST is a Python script that searches an Instructure Canvas course for media and returns results in a CSV file.
