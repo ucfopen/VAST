@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+
+"""Console script for vast."""
+
+import click
+import os
+import sys
+
+from vast import VastConfig, Vast
+
+@click.command()
+@click.option('--settings', is_flag=True, help="Specifies there is a module that contains your config in a dictionary. This overwrites any environment variables or passed in.")
+@click.option('--canvas_api_url', default=lambda: os.environ.get('CANVAS_API_URL'), help="Provide Canvas instance URL.")
+@click.option('--canvas_api_key', default=lambda: os.environ.get('CANVAS_API_KEY'), help="Provide Canvas API key.")
+@click.option('--youtube_api_key', default=lambda: os.environ.get('YOUTUBE_API_KEY'), help="Provide YouTube API key.")
+@click.option('--vimeo_access_token', default=lambda: os.environ.get('VIMEO_ACCESS_TOKEN'), help="Provide Vimeo access token.")
+@click.option('--course', '-c', required=True, help="Provide the course ID that you would like to check.")
+@click.option('--exclude', '-e', help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages")
+def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access_token, course, exclude):
+    """Console script for vast."""
+    if settings:
+        from settings import config
+        canvas_api_url = config['CANVAS_API_URL']
+        canvas_api_key = config['CANVAS_API_KEY']
+        youtube_api_key = config['YOUTUBE_API_KEY']
+        vimeo_access_token = config['VIMEO_ACCESS_TOKEN']
+    if exclude:
+        exclude = exclude.split(',')
+    else:
+        exclude = []
+
+    _config = {
+        "canvas_api_url": canvas_api_url,
+        "canvas_api_key": canvas_api_key,
+        "course_id": course,
+        "exclude": exclude,
+        "youtube_api_key": youtube_api_key,
+        "vimeo_access_token": vimeo_access_token
+    }
+
+    config = VastConfig(**_config)
+    vast = Vast(config=config)
+
+    vast.resource_runner()
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())  # pragma: no cover
