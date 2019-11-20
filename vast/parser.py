@@ -12,6 +12,10 @@ class Parser:
     no_check = []
 
     def parse_content(self, content_pair, flat):
+        """
+        Parse each content pair returning 2 lists, one that
+        needs to be checked for captions and one that does not
+        """
         # Check all links
         if flat:
             soup = BeautifulSoup(content_pair[0], 'html.parser')

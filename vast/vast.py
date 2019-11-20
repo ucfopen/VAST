@@ -36,13 +36,16 @@ class Vast:
         return Canvas(self.config.api_url, self.config.api_key)
 
     def resource_runner(self):
+        """
+        Run through each resource searching for media and parse media for captions
+        """
 
         parser = Parser()
 
         for subclass in ResourceProvider.__subclasses__():
             if subclass.name in self.config.exclude:
                 continue
-            print(subclass)
+            print('Checking ' + subclass.name)
             self.course_name = subclass(vast=self).get_course_name()
             retrieved_data = subclass(vast=self).fetch()
             data = retrieved_data['info']
