@@ -3,6 +3,7 @@
 """Console script for vast."""
 
 import click
+import csv
 import os
 import sys
 
@@ -42,6 +43,36 @@ def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access
     vast = Vast(config=config)
 
     vast.resource_runner()
+
+    with open(vast.course_name + '.csv', mode='w') as report:
+        writer = csv.writer(report, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        writer.writerow([
+            'Media Type',
+            'Media',
+            'Caption Status',
+            'Media Location in Course',
+            'Meta Data'
+        ])
+
+        for media in vast.no_check:
+            writer.writerow([
+                media['type'],
+                media['media_loc'],
+                'Manual check required',
+                media['link_loc']
+            ])
+
+        for media in vast.to_check:
+            caption_list = ",".join(media['captions'])
+            meta_data = ",".join(media['meta_data'])
+            writer.writerow([
+                media['type'],
+                media['media_loc'],
+                caption_list,
+                media['link_loc'],
+                meta_data
+            ])
 
     return 0
 

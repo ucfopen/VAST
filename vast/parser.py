@@ -23,7 +23,8 @@ class Parser:
                     self.no_check.append({
                         'type': 'internal file',
                         'link_loc': content_pair[1],
-                        'media_loc': file_api_endpoint
+                        'media_loc': file_api_endpoint,
+                        'meta_data': []
                     })
 
                 # instructure inline media comment
@@ -32,7 +33,8 @@ class Parser:
                     self.no_check.append({
                         'type': '{} media comment'.format(inline_media),
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A'
+                        'media_loc': 'N/A',
+                        'meta_data': []
                     })
 
                 # Check all other specific anchor tags ...
@@ -41,14 +43,16 @@ class Parser:
                 self.no_check.append({
                         'type': 'canvas video comment',
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A'
+                        'media_loc': 'N/A',
+                        'meta_data': []
                     })
 
             for elem in soup.find_all('audio'):
                 self.no_check.append({
                         'type': 'canvas audio comment',
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A'
+                        'media_loc': 'N/A',
+                        'meta_data': []
                     })
 
             # Check all iframe elements
@@ -61,13 +65,15 @@ class Parser:
                             'type': media_type,
                             'link_loc': content_pair[1],
                             'media_loc': src,
-                            'captions': []
+                            'captions': [],
+                            'meta_data': []
                         })
                     else:
                         self.no_check.append({
                             'type': 'external',
                             'link_loc': content_pair[1],
-                            'media_loc': src
+                            'media_loc': src,
+                            'meta_data': []
                         })
         else:
             # Otherwise not flat and just plain links in content pair to be classified
@@ -77,20 +83,22 @@ class Parser:
                     'type': media_type,
                     'link_loc': content_pair[1],
                     'media_loc': content_pair[0],
-                    'captions': []
+                    'captions': [],
+                    'meta_data': []
                 })
             else:
                 self.no_check.append({
                     'type': 'external',
                     'link_loc': content_pair[1],
-                    'media_loc': content_pair[0]
+                    'media_loc': content_pair[0],
+                    'meta_data': []
                 })
 
         return self.to_check, self.no_check
-                
+
     def classify(self, link):
         """
-        Classify the media as youtube or vimeo or other. Returns True if 
+        Classify the media as youtube or vimeo or other. Returns True if
         media type allows for further checking of captions.
         """
         if re.search(youtube_playlist_pattern, link):

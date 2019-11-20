@@ -4,6 +4,9 @@ class ResourceProvider:
         self.client = vast.get_canvas_client()
         self.course = self.client.get_course(self.vast.config.course_id)
 
+    def get_course_name(self):
+        return self.course.name
+
     def fetch(self):
         if not hasattr(self, 'function'):
             raise NotImplementedError(
