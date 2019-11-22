@@ -68,8 +68,8 @@ def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access
             ])
 
         for media in vast.to_check:
-            caption_list = ",".join(media['captions'])
-            meta_data = ",".join(media['meta_data'])
+            caption_list = ", ".join(media['captions'])
+            meta_data = ", ".join(media['meta_data'])
             writer.writerow([
                 media['type'],
                 media['media_loc'],

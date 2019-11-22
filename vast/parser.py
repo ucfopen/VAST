@@ -31,23 +31,34 @@ class Parser:
                         'meta_data': []
                     })
 
-                # instructure inline media comment
-                inline_media = elem.get('data-media_comment_type')
-                if inline_media:
-                    self.no_check.append({
-                        'type': '{} media comment'.format(inline_media),
+                # Check any plain anchor tags with just an href
+                # Otherwise not flat and just two plain links in content pair to be classified
+                a_href = elem.get('href')
+                check, media_type = self.classify(a_href)
+                if check:
+                    self.to_check.append({
+                        'type': media_type,
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A',
+                        'media_loc': a_href,
+                        'captions': [],
                         'meta_data': []
                     })
 
-                # Check all other specific anchor tags ...
+                # Check for library media in regular <a≥ tags
+                if any(url in a_href for url in lib_media_urls):
+                    self.no_check.append({
+                        'type': 'library media',
+                        'link_loc': content_pair[1],
+                        'media_loc': a_href,
+                        'meta_data': []
+                    })
 
+            # Check for Canvas audio/video comments
             for elem in soup.find_all('video'):
                 self.no_check.append({
                         'type': 'canvas video comment',
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A',
+                        'media_loc': elem.get('data-media_comment_id'),
                         'meta_data': []
                     })
 
@@ -55,7 +66,7 @@ class Parser:
                 self.no_check.append({
                         'type': 'canvas audio comment',
                         'link_loc': content_pair[1],
-                        'media_loc': 'N/A',
+                        'media_loc': elem.get('data-media_comment_id'),
                         'meta_data': []
                     })
 
@@ -64,7 +75,15 @@ class Parser:
                 src = elem.get('src')
                 if src:
                     check, media_type = self.classify(src)
-                    if check:
+                    # Check for library media in iframes
+                    if any(url in src for url in lib_media_urls):
+                        self.no_check.append({
+                            'type': 'library media',
+                            'link_loc': content_pair[1],
+                            'media_loc': src,
+                            'meta_data': []
+                        })
+                    elif check:
                         self.to_check.append({
                             'type': media_type,
                             'link_loc': content_pair[1],
@@ -80,7 +99,7 @@ class Parser:
                             'meta_data': []
                         })
         else:
-            # Otherwise not flat and just plain links in content pair to be classified
+            # Otherwise not flat and just two plain links in content pair to be classified
             check, media_type = self.classify(content_pair[0])
             if check:
                 self.to_check.append({

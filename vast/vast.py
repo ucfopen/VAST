@@ -4,7 +4,6 @@
 
 from canvasapi import Canvas
 from langcodes import Language
-from pprint import pprint
 import re
 import requests
 
