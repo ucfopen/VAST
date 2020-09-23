@@ -4,3 +4,6 @@ __pycache__/
 vast_config.py
 venv/
 venv3/
+.DS_Store
+env/
+env2/
