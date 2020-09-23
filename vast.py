@@ -18,7 +18,7 @@ course_id = input('Enter Canvas ID: ')
 canvas = Canvas(api_url, api_key)
 course = canvas.get_course(course_id)
 print('Checking ' + course.name)
-writer = csv.writer(open('{}.csv'.format(course.name), 'wb'))
+writer = csv.writer(open('{}.csv'.format(course.name), 'w'))
 
 youtube_link = {}
 vimeo_link = {}
@@ -190,7 +190,7 @@ for key in youtube_link:
                     if e['snippet']['language'] == 'en':
                         if e['snippet']['trackKind'] == 'standard':
                             is_standard = True
-                        if e['snippet']['trackKind'] == 'ASR':
+                        elif e['snippet']['trackKind'] == 'asr' or e['snippet']['trackKind'] == 'ASR':
                             is_ASR = True
 
                 if "en" not in caption_language:
