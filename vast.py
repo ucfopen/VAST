@@ -342,7 +342,7 @@ for link in vimeo_link:
                     vimeo_link[link] = ['No English Captions', hour, minute, second] + vimeo_link[link]
 
         except KeyError:
-            vimeo_link[link] = ['Unable to Vimeo Check Video', '', '', ''] + vimeo_link[link]
+            vimeo_link[link] = ['Unable to Check Vimeo Video.', '', '', ''] + vimeo_link[link]
     else:
         if 'review' in link:
             split_link = link.split('/')
