@@ -38,7 +38,6 @@ class Vast:
             if subclass.name in self.config.exclude:
                 continue
             print('Checking ' + subclass.name)
-            import pdb; pdb.set_trace()
             self.course_name = subclass(config=self.config).get_course_name()
             retrieved_data = subclass(config=self.config).fetch()
             data = retrieved_data['info']

@@ -11,13 +11,41 @@ from vast.vast import VastConfig, Vast
 
 @click.command()
 @click.version_option(prog_name="VAST")
-@click.option('--settings', is_flag=True, help="Specifies there is a module that contains your config in a dictionary. This overwrites any environment variables or passed in.")
-@click.option('--canvas_api_url', default=lambda: os.environ.get('CANVAS_API_URL'), help="Provide Canvas instance URL.")
-@click.option('--canvas_api_key', default=lambda: os.environ.get('CANVAS_API_KEY'), help="Provide Canvas API key.")
-@click.option('--youtube_api_key', default=lambda: os.environ.get('YOUTUBE_API_KEY'), help="Provide YouTube API key.")
-@click.option('--vimeo_access_token', default=lambda: os.environ.get('VIMEO_ACCESS_TOKEN'), help="Provide Vimeo access token.")
-@click.option('--course', '-c', required=True, prompt=True, help="Provide the course ID that you would like to check.")
-@click.option('--exclude', '-e', help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages")
+@click.option(
+    '--settings',
+    is_flag=True,
+    help="Specifies there is a module that contains your config in a dictionary. This overwrites any environment variables or passed in."
+)
+@click.option(
+    '--canvas_api_url',
+    envvar='CANVAS_API_URL',
+    help="Provide Canvas instance URL."
+)
+@click.option(
+    '--canvas_api_key',
+    envvar='CANVAS_API_KEY',
+    help="Provide Canvas API key."
+)
+@click.option(
+    '--youtube_api_key',
+    envvar='YOUTUBE_API_KEY',
+    help="Provide YouTube API key."
+)
+@click.option(
+    '--vimeo_access_token',
+    envvar='VIMEO_ACCESS_TOKEN',
+    help="Provide Vimeo access token."
+)
+@click.option(
+    '--course', '-c',
+    required=True,
+    prompt=True,
+    help="Provide the course ID that you would like to check."
+)
+@click.option(
+    '--exclude', '-e',
+    help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages"
+)
 def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access_token, course, exclude):
     if settings:
         from settings import config
@@ -42,6 +70,8 @@ def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access
         "youtube_api_key": youtube_api_key,
         "vimeo_access_token": vimeo_access_token
     }
+
+    print(_config)
 
     config = VastConfig(**_config)
     vast = Vast(config=config)
