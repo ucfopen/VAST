@@ -2,7 +2,6 @@
 
 """Main module."""
 
-from canvasapi import Canvas
 from langcodes import Language
 import re
 import requests
@@ -28,11 +27,6 @@ class Vast:
         self.to_check = []
         self.no_check = []
 
-    def get_canvas_client(self):
-        """
-        Given a VastConfig object, fetch a Canvas client
-        """
-        return Canvas(self.config.api_url, self.config.api_key)
 
     def resource_runner(self):
         """
@@ -45,8 +39,9 @@ class Vast:
             if subclass.name in self.config.exclude:
                 continue
             print('Checking ' + subclass.name)
-            self.course_name = subclass(vast=self).get_course_name()
-            retrieved_data = subclass(vast=self).fetch()
+            import pdb; pdb.set_trace()
+            self.course_name = subclass(config=self.config).get_course_name()
+            retrieved_data = subclass(config=self.config).fetch()
             data = retrieved_data['info']
             flat = retrieved_data['is_flat']
 

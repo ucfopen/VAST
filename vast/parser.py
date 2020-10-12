@@ -20,7 +20,7 @@ class Parser:
         if flat:
             soup = BeautifulSoup(content_pair[0], 'html.parser')
 
-            for elem in soup.find_all('a'):
+            for elem in soup.find_all('a', href=True):
                 # Check if the link is an internal Canvas file
                 file_api_endpoint = elem.get('data-api-endpoint')
                 if file_api_endpoint:
@@ -28,6 +28,16 @@ class Parser:
                         'type': 'internal file',
                         'link_loc': content_pair[1],
                         'media_loc': file_api_endpoint,
+                        'meta_data': []
+                    })
+
+                # Check if the link is a media comment (internal file)
+                data_media_comment = elem.get('data-media_comment_type')
+                if data_media_comment:
+                    self.no_check.append({
+                        'type': 'canvas media comment',
+                        'link_loc': content_pair[1],
+                        'media_loc': content_pair[1],
                         'meta_data': []
                     })
 
