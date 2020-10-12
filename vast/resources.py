@@ -2,7 +2,6 @@ from abc import ABC
 
 from canvasapi import Canvas
 
-
 class ResourceProvider(ABC):
     def __init__(self, config):
         self.config = config
@@ -15,8 +14,8 @@ class ResourceProvider(ABC):
     def fetch(self):
         if not hasattr(self, 'function'):
             raise NotImplementedError(
-                "{} requires either a definition of 'function' or an "
-                "implementation of 'fetch()'".format(self.__class__)
+                "{} requires either a definition of a canvasapi course 'function'"
+                "or an implementation of 'fetch()'".format(self.__class__)
             )
 
         function = getattr(self.course, self.function)
@@ -30,6 +29,12 @@ class ResourceProvider(ABC):
             'info': [],
             'is_flat': True
         }
+
+        if not hasattr(self, 'field'):
+            raise NotImplementedError(
+                "{} requires either a definition of 'field'"
+                "or an implementation of 'fetch()'".format(self.__class__)
+            )
 
         for item in items:
             retrieved_data['info'].append((
