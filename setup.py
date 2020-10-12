@@ -16,9 +16,9 @@ requirements = [
     'beautifulsoup4==4.5.3',
     'bs4==0.0.1',
     'canvasapi',
-    'six',
+    'langcodes==1.4.1',
     'requests',
-    'langcodes',
+    'six',
 ]
 
 setup_requirements = [ ]

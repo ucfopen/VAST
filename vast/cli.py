@@ -7,9 +7,10 @@ import csv
 import os
 import sys
 
-from vast import VastConfig, Vast
+from vast.vast import VastConfig, Vast
 
 @click.command()
+@click.version_option(prog_name="VAST")
 @click.option('--settings', is_flag=True, help="Specifies there is a module that contains your config in a dictionary. This overwrites any environment variables or passed in.")
 @click.option('--canvas_api_url', default=lambda: os.environ.get('CANVAS_API_URL'), help="Provide Canvas instance URL.")
 @click.option('--canvas_api_key', default=lambda: os.environ.get('CANVAS_API_KEY'), help="Provide Canvas API key.")
@@ -18,7 +19,6 @@ from vast import VastConfig, Vast
 @click.option('--course', '-c', required=True, prompt=True, help="Provide the course ID that you would like to check.")
 @click.option('--exclude', '-e', help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages")
 def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access_token, course, exclude):
-    """Console script for vast."""
     if settings:
         from settings import config
         try:

@@ -6,9 +6,8 @@ from langcodes import Language
 import re
 import requests
 
-from resources import ResourceProvider, SyllabusService, AnnouncementService, ModuleService, AssignmentService, DiscussionService, PageService
-from parser import Parser, youtube_pattern, youtube_playlist_pattern, vimeo_pattern
-
+from vast.provider import ResourceProvider, SyllabusService, AnnouncementService, ModuleService, AssignmentService, DiscussionService, PageService
+from vast.parser import Parser, youtube_pattern, youtube_playlist_pattern, vimeo_pattern
 
 class VastConfig:
     def __init__(self, canvas_api_url, canvas_api_key, course_id, exclude, youtube_api_key, vimeo_access_token):
