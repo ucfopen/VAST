@@ -89,6 +89,7 @@ class ModuleService(ResourceProvider):
                     ))
         return retrieved_data
 
+
 class AssignmentService(ResourceProvider):
     name = "assignments"
     function = "get_assignments"
