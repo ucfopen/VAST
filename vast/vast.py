@@ -10,13 +10,13 @@ from vast.provider import ResourceProvider, SyllabusService, AnnouncementService
 from vast.parser import Parser, youtube_pattern, youtube_playlist_pattern, vimeo_pattern
 
 class VastConfig:
-    def __init__(self, canvas_api_url, canvas_api_key, course_id, exclude, youtube_api_key, vimeo_access_token):
-        self.api_url = canvas_api_url
-        self.api_key = canvas_api_key
-        self.course_id = course_id
-        self.exclude = exclude
-        self.youtube_api_key = youtube_api_key
-        self.vimeo_access_token = vimeo_access_token
+    def __init__(self, **kwargs):
+        self.api_url = kwargs['canvas_api_url']
+        self.api_key = kwargs['canvas_api_key']
+        self.course_id = kwargs['course_id']
+        self.exclude = kwargs['exclude']
+        self.youtube_api_key = kwargs['youtube_api_key']
+        self.vimeo_access_token = kwargs['vimeo_access_token']
 
 
 class Vast:

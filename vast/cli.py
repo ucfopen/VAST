@@ -6,16 +6,12 @@ import click
 import csv
 import os
 import sys
+from configparser import ConfigParser, NoOptionError, NoSectionError
 
 from vast.vast import VastConfig, Vast
 
-@click.command()
+@click.group()
 @click.version_option(prog_name="VAST")
-@click.option(
-    '--settings',
-    is_flag=True,
-    help="Specifies there is a module that contains your config in a dictionary. This overwrites any environment variables or passed in."
-)
 @click.option(
     '--canvas_api_url',
     envvar='CANVAS_API_URL',
@@ -37,6 +33,93 @@ from vast.vast import VastConfig, Vast
     help="Provide Vimeo access token."
 )
 @click.option(
+    '--use-config', '-c',
+    is_flag=True,
+    help="Read from a configuration file."
+)
+@click.option(
+    '--config-file',
+    type=click.Path(),
+    default='~/.vast.ini',
+)
+@click.pass_context
+def main(ctx, **kwargs):
+    """
+    Tool for analyzing media content and captions in Instructure Canvas courses.
+
+    You need the api url and key for your Canvas instance as well as YouTube and Vimeo
+    API keys.
+    """
+
+    ctx.obj = {}
+
+    for key, value in kwargs.items():
+        ctx.obj[key] = value
+
+    if kwargs['use_config']:
+        filename = os.path.expanduser(kwargs['config_file'])
+
+        if os.path.exists(filename):
+            config = ConfigParser()
+            config.read(filename)
+            try:
+                ctx.obj['canvas_api_url'] = config.get('CANVAS', 'canvas_api_url')
+                ctx.obj['canvas_api_key'] = config.get('CANVAS', 'canvas_api_key')
+                ctx.obj['youtube_api_key'] = config.get('MEDIA', 'youtube_api_key')
+                ctx.obj['vimeo_access_token'] = config.get('MEDIA', 'vimeo_access_token')
+            except NoOptionError as error:
+                raise Exception('Corrupted config file [{}]: {}'.format(filename, error))
+                return 0
+            except NoSectionError as error:
+                raise Exception('Corrupted config file [{}]: {}'.format(filename, error))
+                return 0
+
+
+@main.command()
+@click.pass_context
+def config(ctx):
+    """
+    Initialize and store config in a file.
+    """
+    config_file = os.path.expanduser(ctx.obj['config_file'])
+
+    config_object = ConfigParser()
+
+    canvas_api_url = click.prompt(
+        "Please enter the API URL for your Canvas instance",
+        default=ctx.obj['canvas_api_url']
+    )
+
+    canvas_api_key = click.prompt(
+        "Please enter your API key",
+        default=ctx.obj['canvas_api_key']
+    )
+
+    youtube_api_key = click.prompt(
+        "Please enter your YouTube API key",
+        default=ctx.obj['youtube_api_key']
+    )
+
+    vimeo_access_token = click.prompt(
+        "Please enter your Vimeo access token",
+        default=ctx.obj['vimeo_access_token']
+    )
+
+    config_object["CANVAS"] = {
+        "canvas_api_url": canvas_api_url,
+        "canvas_api_key": canvas_api_key
+    }
+
+    config_object["MEDIA"] = {
+        "youtube_api_key": youtube_api_key,
+        "vimeo_access_token": vimeo_access_token
+    }
+
+    with open(config_file, 'w') as conf:
+        config_object.write(conf)
+
+@main.command()
+@click.option(
     '--course', '-c',
     required=True,
     prompt=True,
@@ -46,34 +129,24 @@ from vast.vast import VastConfig, Vast
     '--exclude', '-e',
     help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages"
 )
-def main(settings, canvas_api_url, canvas_api_key, youtube_api_key, vimeo_access_token, course, exclude):
-    if settings:
-        from settings import config
-        try:
-            canvas_api_url = config['CANVAS_API_URL']
-            canvas_api_key = config['CANVAS_API_KEY']
-            youtube_api_key = config['YOUTUBE_API_KEY']
-            vimeo_access_token = config['VIMEO_ACCESS_TOKEN']
-        except KeyError as error:
-            print(f'Missing {error} key in config file')
-            return 0
+@click.pass_context
+def analyze(ctx, course, exclude):
+    """
+    Analyze a course for captioned media.
+    """
+
+    if not all(ctx.obj.values()):
+        raise KeyError('Missing one or more config values.')
+        return 0
     if exclude:
         exclude = exclude.split(',')
     else:
         exclude = []
 
-    _config = {
-        "canvas_api_url": canvas_api_url,
-        "canvas_api_key": canvas_api_key,
-        "course_id": course,
-        "exclude": exclude,
-        "youtube_api_key": youtube_api_key,
-        "vimeo_access_token": vimeo_access_token
-    }
+    ctx.obj['course_id'] = course;
+    ctx.obj['exclude'] = exclude;
 
-    print(_config)
-
-    config = VastConfig(**_config)
+    config = VastConfig(**ctx.obj)
     vast = Vast(config=config)
 
     vast.resource_runner()
