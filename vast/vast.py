@@ -20,8 +20,8 @@ class VastConfig:
 
 
 class Vast:
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, vconfig):
+        self.vconfig = vconfig
         self.course_name = None
         self.to_check = []
         self.no_check = []
@@ -35,18 +35,20 @@ class Vast:
         parser = Parser()
 
         for subclass in ResourceProvider.__subclasses__():
-            if subclass.name in self.config.exclude:
+            if subclass.name in self.vconfig.exclude:
                 continue
             print('Checking ' + subclass.name)
-            self.course_name = subclass(config=self.config).get_course_name()
-            retrieved_data = subclass(config=self.config).fetch()
+            self.course_name = subclass(vconfig=self.vconfig).get_course_name()
+            retrieved_data = subclass(vconfig=self.vconfig).fetch()
             data = retrieved_data['info']
             flat = retrieved_data['is_flat']
+            import pdb; pdb.set_trace();
 
             for content_pair in data:
                 # Each content pair represents a page, or a discussion, etc. (Whole pages) if flat
                 # If not flat then each pair is simply a link and a location
                 self.to_check, self.no_check = parser.parse_content(content_pair, flat)
+
 
         # Validate that the media links contain captions
         for link in self.to_check:
@@ -55,7 +57,7 @@ class Vast:
                 video_id = match.group(1)
                 r = requests.get(
                     'https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId={}&key={}'
-                    .format(video_id, self.config.youtube_api_key)
+                    .format(video_id, self.vconfig.youtube_api_key)
                 )
 
                 if r.status_code == 404:
@@ -81,7 +83,7 @@ class Vast:
                 video_id = match.group(4)
                 r = requests.get(
                     'https://api.vimeo.com/videos/{}/texttracks'.format(video_id),
-                    headers={'Authorization': 'bearer {}'.format(self.config.vimeo_access_token)}
+                    headers={'Authorization': 'bearer {}'.format(self.vconfig.vimeo_access_token)}
                 )
 
                 if r.status_code == 404:

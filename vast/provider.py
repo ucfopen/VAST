@@ -3,10 +3,10 @@ from abc import ABC
 from canvasapi import Canvas
 
 class ResourceProvider(ABC):
-    def __init__(self, config):
-        self.config = config
-        self.client = Canvas(self.config.api_url, self.config.api_key)
-        self.course = self.client.get_course(self.config.course_id)
+    def __init__(self, vconfig):
+        self.vconfig = vconfig
+        self.client = Canvas(self.vconfig.api_url, self.vconfig.api_key)
+        self.course = self.client.get_course(self.vconfig.course_id)
 
     def get_course_name(self):
         return self.course.name
@@ -50,12 +50,17 @@ class SyllabusService(ResourceProvider):
 
     def fetch(self):
         syllabus = self.client.get_course(
-            self.config.course_id,
+            self.vconfig.course_id,
             include='syllabus_body'
         )
+        if not syllabus.syllabus_body:
+            return {
+                'info': [],
+                'is_flat': True
+            }
         url = '{}/courses/{}/assignments/syllabus'.format(
-            self.config.api_url,
-            self.config.course_id
+            self.vconfig.api_url,
+            self.vconfig.course_id
         )
         return {
             'info': [(syllabus.syllabus_body, url)],

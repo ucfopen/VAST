@@ -117,6 +117,7 @@ def config(ctx):
 
     with open(config_file, 'w') as conf:
         config_object.write(conf)
+        click.echo('Config file written.')
 
 @main.command()
 @click.option(
@@ -146,8 +147,8 @@ def analyze(ctx, course, exclude):
     ctx.obj['course_id'] = course;
     ctx.obj['exclude'] = exclude;
 
-    config = VastConfig(**ctx.obj)
-    vast = Vast(config=config)
+    vconfig = VastConfig(**ctx.obj)
+    vast = Vast(vconfig=vconfig)
 
     vast.resource_runner()
 
@@ -180,7 +181,7 @@ def analyze(ctx, course, exclude):
                 media['link_loc'],
                 meta_data
             ])
-
+    click.echo('Analysis complete.')
     return 0
 
 if __name__ == "__main__":
