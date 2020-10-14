@@ -80,7 +80,7 @@ class Vast:
 
             if link['type'] == 'vimeo':
                 match = re.search(vimeo_pattern, link['media_loc'])
-                video_id = match.group(4)
+                video_id = match.group(3)
                 r = requests.get(
                     'https://api.vimeo.com/videos/{}/texttracks'.format(video_id),
                     headers={'Authorization': 'bearer {}'.format(self.vconfig.vimeo_access_token)}
