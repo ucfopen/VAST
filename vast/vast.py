@@ -42,13 +42,11 @@ class Vast:
             retrieved_data = subclass(vconfig=self.vconfig).fetch()
             data = retrieved_data['info']
             flat = retrieved_data['is_flat']
-            import pdb; pdb.set_trace();
 
             for content_pair in data:
                 # Each content pair represents a page, or a discussion, etc. (Whole pages) if flat
                 # If not flat then each pair is simply a link and a location
                 self.to_check, self.no_check = parser.parse_content(content_pair, flat)
-
 
         # Validate that the media links contain captions
         for link in self.to_check:
@@ -56,16 +54,16 @@ class Vast:
                 match = re.search(youtube_pattern, link['media_loc'])
                 video_id = match.group(1)
                 r = requests.get(
-                    'https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId={}&key={}'
+                    'https://www.googleapis.com/youtube/v3/captions?videoId={}&part=snippet&key={}'
                     .format(video_id, self.vconfig.youtube_api_key)
                 )
 
-                if r.status_code == 404:
-                    link['captions'].append('N/A')
-                    link['meta_data'].append('Broken video link')
-                    continue
-
                 response = r.json()
+
+                if not r.ok:
+                    link['captions'].append('N/A')
+                    link['meta_data'].append(response['error']['message'])
+                    continue
 
                 try:
                     for item in response['items']:
@@ -86,9 +84,9 @@ class Vast:
                     headers={'Authorization': 'bearer {}'.format(self.vconfig.vimeo_access_token)}
                 )
 
-                if r.status_code == 404:
+                if not r.ok:
                     link['captions'].append('N/A')
-                    link['meta_data'].append('Broken video link')
+                    link['meta_data'].append(response['error']['message'])
                     continue
 
                 response = r.json()
