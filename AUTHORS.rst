@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* John Raible
+* Matt Emond
+* Tyler Wallace

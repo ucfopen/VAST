@@ -1,7 +1,5 @@
-====
-VAST
-====
 
+[![Join UCF Open Slack Discussions](https://ucf-open-slackin.herokuapp.com/badge.svg)](https://ucf-open-slackin.herokuapp.com/)
 
 .. image:: https://img.shields.io/pypi/v/vast.svg
         :target: https://pypi.python.org/pypi/vast
@@ -9,27 +7,89 @@ VAST
 .. image:: https://img.shields.io/travis/ucfopen/vast.svg
         :target: https://travis-ci.org/ucfopen/vast
 
-.. image:: https://readthedocs.org/projects/vast/badge/?version=latest
-        :target: https://vast.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-
-
-
-Python Boilerplate contains all the boilerplate you need to create a Python package.
-
-
 * Free software: GNU General Public License v3
-* Documentation: https://vast.readthedocs.io.
 
+# VAST (Video Accessibility Scanning Tool)
 
-Features
---------
+VAST is a Python script that searches an Instructure Canvas course for media and returns results in a CSV file.
 
-* TODO
+## Requirements
 
-Credits
--------
+* Python 3
+* YouTube API Key
+* Vimeo API Key
+* System permission to install python libraries
+
+## Installation
+
+First install Vast using pip:
+```
+pip install vast
+```
+Check to make sure VAST is properly installed by running:
+```
+vast --version
+vast --help
+```
+
+Next you must provide VAST with all the configuration variables. You can do this by setting environment variables, providing each key and value as a parameter, or by using the config command to create a config file. The config command will ask you to set the following:
+    * **canvas_api_url** - Canvas URL and API e.g. `https://example.instructure.com`
+    * **canvas_api_key** - Canvas API Key (To scan a course you're not enrolled in, you'll needs a sub-account or admin level key).
+    * **youtube_api_key** - See instructions below.
+    * **vimeo_access_token** - See instructions below.
+```
+vast config
+```
+
+### Google/YouTube API Key
+In order for VAST to scan YouTube videos for closed captioning, you will need to create a YouTube Data API key.  Follow the instructions below:
+
+1. Go to the [Google Developer Console](https://console.developers.google.com).
+2. Create a project.
+3. Enable ***YouTube Data API V3***
+4. Create an ***API key*** credential.
+
+### Vimeo API Key
+In order for VAST to scan Vimeo videos for closed captioning, you will need to create a Vimeo access token. Follow the instructions below:
+
+1. [Create a new App on Vimeo Developer API](https://developer.vimeo.com/apps/new?source=getting-started), please note you must have a Vimeo Developer account.
+2. On your application's "Authentication" page, Generate a new Access Token.  (Select the `Public` and `Private` checkboxes for Scopes.)
+
+## Types of Media
+
+VAST will identify the following types of media:
+
+* YouTube videos
+* Vimeo videos
+* Video files linked from the Rich Content Editor
+* Audio files linked from the Rich Content Editor
+* SWF files linked from the Rich Content Editor
+* Media comments in the Rich Content Editor
+* Embedded Canvas Video and Audio in the Rich Content Editor
+* Links from video providers:
+    * Films on Demand
+    * Alexander Street Press
+    * Kanopy
+* Custom links can be added/removed to the `lib_media_urls` list in the `parser.py`
+
+## Limitations
+
+* VAST does not check the Quizzes tool.
+* VAST can not determine if captions exist on video files, audio files, flash files, or video providers. The report will list the location of the file to check manually and provide a download link. Make sure to be logged into Canvas first; unless the download link will not work.
+* VAST may not be able to check all YouTube or Vimeo videos for captions. If it can't, the report will note so.
+
+## Testing
+
+A testing course is available in [Canvas Commons](https://lor.instructure.com/). Use the search term `Vast Test Course`.
+
+## Use
+
+1. Open up a terminal window
+2. Type `vast -c analyze` ('-c' indicates you are reading the configuration file instead of manually entering them)
+3. Enter the Canvas course id number e.g.(**1234567** from `https://example.instructure.com/courses/1234567`)
+5. The report will be saved in the same directory as the `vast.py` script
+
+## Credits
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 

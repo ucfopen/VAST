@@ -42,7 +42,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Python Boilerplate contains all the boilerplate you need to create a Python package.",
+    description="VAST is a Python script that searches an Instructure Canvas course for media and returns results in a CSV file.",
     entry_points={
         'console_scripts': [
             'vast=vast.cli:main',
@@ -59,6 +59,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/ucfopen/vast',
-    version='0.1.0',
+    version='1.0.0',
     zip_safe=False,
 )
