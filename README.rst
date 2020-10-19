@@ -1,9 +1,7 @@
-
-[![Join UCF Open Slack Discussions](https://ucf-open-slackin.herokuapp.com/badge.svg)](https://ucf-open-slackin.herokuapp.com/)
-
+.. image:: https://ucf-open-slackin.herokuapp.com/badge.svg
+        :target: https://ucf-open-slackin.herokuapp.com
 .. image:: https://img.shields.io/pypi/v/vast.svg
         :target: https://pypi.python.org/pypi/vast
-
 .. image:: https://img.shields.io/travis/ucfopen/vast.svg
         :target: https://travis-ci.org/ucfopen/vast
 
