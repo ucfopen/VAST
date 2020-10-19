@@ -73,16 +73,27 @@ Types of Media
 VAST will identify the following types of media:
 
 - YouTube videos
+
 - Vimeo videos
+
 - Video files linked from the Rich Content Editor
+
 - Audio files linked from the Rich Content Editor
+
 - SWF files linked from the Rich Content Editor
+
 - Media comments in the Rich Content Editor
+
 - Embedded Canvas Video and Audio in the Rich Content Editor
+
 - Links from video providers
+
     - Films on Demand
+    
     - Alexander Street Press
+    
     - Kanopy
+
 - Custom links can be added/removed to the `lib_media_urls` list in the `parser.py`
 
 Limitations
