@@ -5,10 +5,51 @@
 
 
 import unittest
+from unittest import mock
 from click.testing import CliRunner
 
-from vast.vast import Vast, VastConfig
 from vast.cli import main, config, analyze
+from vast.vast import Vast, VastConfig
+from vast.provider import ResourceProvider, SyllabusService, AnnouncementService, ModuleService, AssignmentService, DiscussionService, PageService
+from vast.parser import Parser
+
+
+class TestProvider(unittest.TestCase):
+    """Test for 'provider' Canvas classes"""
+
+    def setUp(self):
+        """Set up test fixtures, if any."""
+        self.vconfig = VastConfig(
+            canvas_api_url='test1',
+            canvas_api_key='test2',
+            course_id='123456',
+            exclude=[],
+            youtube_api_key='test3',
+            vimeo_access_token='test4'
+        )
+
+    @mock.patch('vast.provider.Canvas')
+    def test_resource_provider_config_load(self, mock_canvas):
+        provider = ResourceProvider(self.vconfig)
+        assert provider.vconfig == self.vconfig
+
+    @mock.patch('vast.provider.Canvas')
+    def test_resource_provider_canvas_client(self, mock_canvas):
+        provider = ResourceProvider(self.vconfig)
+        mock_canvas.assert_called_with(self.vconfig.api_url, self.vconfig.api_key)
+        provider.client.get_course.assert_called_with(self.vconfig.course_id)
+
+    @mock.patch('vast.provider.Canvas')
+    def test_resource_provider_returns_course_name(self, mock_canvas):
+        provider = ResourceProvider(self.vconfig)
+        provider.course.name = "ABC1234-00Semester"
+        course_name = provider.get_course_name()
+        assert course_name == provider.course.name
+
+    @mock.patch('vast.provider.Canvas')
+    def test_resource_provider_instantiation(self, mock_canvas):
+        provider = ResourceProvider(self.vconfig)
+        self.assertRaises(NotImplementedError, provider.fetch)
 
 
 class TestVast(unittest.TestCase):
@@ -16,7 +57,7 @@ class TestVast(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        vconfig = VastConfig(
+        self.vconfig = VastConfig(
             canvas_api_url='test1',
             canvas_api_key='test2',
             course_id='123456',
@@ -30,7 +71,6 @@ class TestVast(unittest.TestCase):
 
     def test_000_something(self):
         """Test something."""
-        import pdb; pdb.set_trace()
 
 class TestCli(unittest.TestCase):
     """Tests for 'vast' click CLI."""
