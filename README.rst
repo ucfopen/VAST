@@ -112,7 +112,7 @@ Usage
 -----
 
 1. Open up a terminal window
-2. Type `vast -c analyze` ('-c' indicates you are reading the configuration file instead of manually entering them)
+2. Type ``vast -c analyze`` ('-c' indicates you are reading the configuration file instead of manually entering them)
 3. Enter the Canvas course id number e.g.(1234567 from `https://example.instructure.com/courses/1234567`)
 4. The report will be saved in the same directory as the `vast.py` script
 
