@@ -38,12 +38,16 @@ Check to make sure VAST is properly installed by running::
 Next you must provide VAST with all the configuration variables. You can do this by setting environment variables, providing each key and value as a parameter, or by using the config command to create a config file:: 
 
     vast config
+    
+Configuration
+-------------
 
-The config command will ask you to set the following.
-    - **canvas_api_url** - Canvas URL and API e.g. `https://example.instructure.com`
-    - **canvas_api_key** - Canvas API Key (To scan a course you're not enrolled in, you'll needs a sub-account or admin level key).
-    - **youtube_api_key** - See instructions below.
-    - **vimeo_access_token** - See instructions below.
+The `config` command will ask you to set the following values and store a configuration file in your user directory.
+
+- canvas_api_url - Canvas instance URL. (e.g. `https://example.instructure.com`)
+- canvas_api_key - Canvas API Key. (To scan a course you are not enrolled in, you'll need a sub-account or admin level key)
+- youtube_api_key - See instructions below.
+- vimeo_access_token - See instructions below.
 
 YouTube API Key
 ^^^^^^^^^^^^^^^
@@ -75,7 +79,7 @@ VAST will identify the following types of media:
 - SWF files linked from the Rich Content Editor
 - Media comments in the Rich Content Editor
 - Embedded Canvas Video and Audio in the Rich Content Editor
-- Links from video providers:
+- Links from video providers
     - Films on Demand
     - Alexander Street Press
     - Kanopy
