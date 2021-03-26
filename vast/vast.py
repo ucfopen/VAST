@@ -1,116 +1,98 @@
 # -*- coding: utf-8 -*-
+import logging
+import os
+from logging.config import dictConfig
+from typing import Iterator, List
 
-"""Main module."""
-
-import re
-
-import requests
-from langcodes import Language
-
-from vast.parser import Parser, vimeo_pattern, youtube_pattern
+from vast import parser
+from vast.media import Media
 from vast.provider import ResourceProvider
+
+dictConfig(
+    {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
+        },
+        "handlers": {
+            "default": {
+                "level": "DEBUG",
+                "formatter": "standard",
+                "class": "logging.StreamHandler",
+            },
+        },
+        "loggers": {
+            "vast": {"handlers": ["default"], "level": "DEBUG", "propagate": True},
+            "vast.provider": {"handlers": ["default"], "level": "INFO"},
+            "canvasapi": {"handlers": ["default"], "level": "WARNING"},
+        },
+    }
+)
+
+logger = logging.getLogger(__name__)
 
 
 class VastConfig:
-    def __init__(self, **kwargs):
-        self.api_url = kwargs["canvas_api_url"]
-        self.api_key = kwargs["canvas_api_key"]
-        self.course_id = kwargs["course_id"]
-        self.exclude = kwargs["exclude"]
-        self.youtube_api_key = kwargs["youtube_api_key"]
-        self.vimeo_access_token = kwargs["vimeo_access_token"]
+    def __init__(self, **kwargs) -> None:
+        try:
+            self.canvas_api_url = kwargs["canvas_api_url"]
+            self.canvas_api_key = kwargs["canvas_api_key"]
+            self.course_id = kwargs["course_id"]
+            self.exclude = kwargs["exclude"]
+            self.youtube_api_key = kwargs["youtube_api_key"]
+            self.vimeo_access_token = kwargs["vimeo_access_token"]
+        except KeyError:
+            logger.exception("Config validation failed")
+            raise RuntimeError("Invalid configuration provided to VAST")
+
+    @classmethod
+    def from_env(cls, **kwargs) -> "VastConfig":
+        config = {
+            "canvas_api_url": kwargs.get("canvas_api_url")
+            or os.environ.get("CANVAS_API_URL"),
+            "canvas_api_key": kwargs.get("canvas_api_key")
+            or os.environ.get("CANVAS_API_KEY"),
+            "course_id": kwargs.get("course_id") or os.environ.get("COURSE_ID"),
+            "exclude": kwargs.get("exclude", []) or os.environ.get("EXCLUDE", []),
+            "youtube_api_key": kwargs.get("youtube_api_key")
+            or os.environ.get("YOUTUBE_API_KEY"),
+            "vimeo_access_token": kwargs.get("vimeo_access_token")
+            or os.environ.get("VIMEO_ACCESS_TOKEN"),
+        }
+        return VastConfig(**config)
 
 
 class Vast:
-    def __init__(self, vconfig):
-        self.vconfig = vconfig
-        self.course_name = None
-        self.to_check = []
-        self.no_check = []
+    def __init__(self, config) -> None:
+        if not config:
+            logger.exception("Empty configuration file supplied")
+            raise RuntimeError("Invalid configuration provided to VAST")
 
-    def resource_runner(self):
-        """
-        Run through each resource searching for media and parse media for captions
-        """
+        self.config = config
 
-        parser = Parser()
+    def scan(self) -> List[Media]:
+        scanned = []
+        for discovered_media in self._get_provider_media():
+            for media in discovered_media:
+                logger.info(media.type)
+                scanned.append(parser.get_metadata(media))
+        return scanned
 
-        for subclass in ResourceProvider.__subclasses__():
-            if subclass.name in self.vconfig.exclude:
-                continue
-            print("Checking " + subclass.name)
-            self.course_name = subclass(vconfig=self.vconfig).get_course_name()
-            retrieved_data = subclass(vconfig=self.vconfig).fetch()
-            data = retrieved_data["info"]
-            flat = retrieved_data["is_flat"]
+    def _get_provider_media(self) -> Iterator[List[Media]]:
+        for provider in self._get_enabled_providers():
+            media: List = []
+            logger.info("Scanning %s", provider.name)
+            content = provider.fetch()
+            for item in content:
+                media.extend(parser.parse_content(item))
+            logger.info("Found %d items", len(media))
+            yield media
 
-            for content_pair in data:
-                # Each content pair represents a page, or a discussion, etc. (Whole pages) if flat
-                # If not flat then each pair is simply a link and a location
-                self.to_check, self.no_check = parser.parse_content(content_pair, flat)
-
-        # Validate that the media links contain captions
-        for link in self.to_check:
-            if link["type"] == "youtube":
-                match = re.search(youtube_pattern, link["media_loc"])
-                video_id = match.group(1)
-                r = requests.get(
-                    "https://www.googleapis.com/youtube/v3/captions?videoId={}&part=snippet&key={}".format(
-                        video_id, self.vconfig.youtube_api_key
-                    )
-                )
-
-                response = r.json()
-
-                if not r.ok:
-                    link["captions"].append("N/A")
-                    link["meta_data"].append(response["error"]["message"])
-                    continue
-
-                try:
-                    for item in response["items"]:
-                        caption_lang_code = item["snippet"]["language"]
-                        lang_name = Language.make(
-                            language=caption_lang_code
-                        ).language_name()
-                        if item["snippet"]["trackKind"] == "ASR":
-                            link["captions"].append(
-                                "Automatic Speech Recognition: " + lang_name
-                            )
-                        elif caption_lang_code:
-                            link["captions"].append(lang_name)
-                except:
-                    pass
-
-            if link["type"] == "vimeo":
-                match = re.search(vimeo_pattern, link["media_loc"])
-                video_id = match.group(3)
-                r = requests.get(
-                    "https://api.vimeo.com/videos/{}/texttracks".format(video_id),
-                    headers={
-                        "Authorization": "bearer {}".format(
-                            self.vconfig.vimeo_access_token
-                        )
-                    },
-                )
-
-                if not r.ok:
-                    link["captions"].append("N/A")
-                    link["meta_data"].append(response["error"]["message"])
-                    continue
-
-                response = r.json()
-
-                try:
-                    for item in response["data"]:
-                        if item["language"]:
-                            caption_lang_code = item["language"]
-                            lang_name = Language.make(
-                                language=caption_lang_code
-                            ).language_name()
-                            link["captions"].append(lang_name)
-                except:
-                    pass
-
-            if len(link["captions"]) == 0:
-                link["captions"].append("No captions")
+    def _get_enabled_providers(self) -> Iterator[ResourceProvider]:
+        providers = ResourceProvider.__subclasses__()
+        for provider in providers:
+            if provider.name not in self.config.exclude:
+                yield provider(self.config)
+            else:
+                logger.info("Skipping disabled provider: %s", provider.name)

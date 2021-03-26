@@ -33,30 +33,35 @@ from vast.vast import Vast, VastConfig
 )
 @click.option("--config-file", type=click.Path(), default="~/.vast.ini")
 @click.pass_context
-def main(ctx, **kwargs):
+def main(context, **kwargs):
     """
     Tool for analyzing media content and captions in Instructure Canvas courses.
 
     You need the api url and key for your Canvas instance as well as YouTube and Vimeo
     API keys.
     """
-
-    ctx.obj = {}
+    context.config = {}
 
     for key, value in kwargs.items():
-        ctx.obj[key] = value
+        context.config[key] = value
 
-    if kwargs["use_config"]:
+    if kwargs.get("use_config"):
         filename = os.path.expanduser(kwargs["config_file"])
 
         if os.path.exists(filename):
             config = ConfigParser()
             config.read(filename)
             try:
-                ctx.obj["canvas_api_url"] = config.get("CANVAS", "canvas_api_url")
-                ctx.obj["canvas_api_key"] = config.get("CANVAS", "canvas_api_key")
-                ctx.obj["youtube_api_key"] = config.get("MEDIA", "youtube_api_key")
-                ctx.obj["vimeo_access_token"] = config.get(
+                context.config["canvas_api_url"] = config.get(
+                    "CANVAS", "canvas_api_url"
+                )
+                context.config["canvas_api_key"] = config.get(
+                    "CANVAS", "canvas_api_key"
+                )
+                context.config["youtube_api_key"] = config.get(
+                    "MEDIA", "youtube_api_key"
+                )
+                context.config["vimeo_access_token"] = config.get(
                     "MEDIA", "vimeo_access_token"
                 )
             except NoOptionError as error:
@@ -71,44 +76,42 @@ def main(ctx, **kwargs):
 
 @main.command()
 @click.pass_context
-def config(ctx):
+def config(context):
     """
     Initialize and store config in a file.
     """
-    config_file = os.path.expanduser(ctx.obj["config_file"])
+    config_file = os.path.expanduser(context.config["config_file"])
 
-    config_object = ConfigParser()
+    config = ConfigParser()
 
     canvas_api_url = click.prompt(
         "Please enter the API URL for your Canvas instance",
-        default=ctx.obj["canvas_api_url"],
+        default=context.config["canvas_api_url"],
     )
-
     canvas_api_key = click.prompt(
-        "Please enter your API key", default=ctx.obj["canvas_api_key"]
+        "Please enter your API key", default=context.config["canvas_api_key"]
     )
 
     youtube_api_key = click.prompt(
-        "Please enter your YouTube API key", default=ctx.obj["youtube_api_key"]
+        "Please enter your YouTube API key", default=context.config["youtube_api_key"]
     )
-
     vimeo_access_token = click.prompt(
-        "Please enter your Vimeo access token", default=ctx.obj["vimeo_access_token"]
+        "Please enter your Vimeo access token",
+        default=context.config["vimeo_access_token"],
     )
 
-    config_object["CANVAS"] = {
+    config["CANVAS"] = {
         "canvas_api_url": canvas_api_url,
         "canvas_api_key": canvas_api_key,
     }
-
-    config_object["MEDIA"] = {
+    config["MEDIA"] = {
         "youtube_api_key": youtube_api_key,
         "vimeo_access_token": vimeo_access_token,
     }
 
-    with open(config_file, "w") as conf:
-        config_object.write(conf)
-        click.echo("Config file written.")
+    with open(config_file, "w") as out:
+        config.write(out)
+        click.echo("Config written to %s", config_file)
 
 
 @main.command()
@@ -124,66 +127,32 @@ def config(ctx):
     "-e",
     help="Comma separated list of services you would like to exclude. Options: syllabus, announcements, modules, assignments, discussions, and pages",
 )
+@click.option(
+    "--output-path",
+    "-o",
+    help="Specify an output path (default: current directory)",
+    default=os.getcwd(),
+)
 @click.pass_context
-def analyze(ctx, course, exclude):
+def report(context, course, exclude, output_path):
     """
     Analyze a course for captioned media.
     """
+    if not exclude:
+        exclude = ""
 
-    if not all(ctx.obj.values()):
-        raise KeyError("Missing one or more config values.")
-    if exclude:
-        exclude = exclude.split(",")
-    else:
-        exclude = []
+    context.config["course_id"] = course
+    context.config["exclude"] = exclude.split(",") if exclude else []
 
-    ctx.obj["course_id"] = course
-    ctx.obj["exclude"] = exclude
+    vast = Vast(config=VastConfig(**context.config))
 
-    vconfig = VastConfig(**ctx.obj)
-    vast = Vast(vconfig=vconfig)
-
-    vast.resource_runner()
-
-    with open(vast.course_name + ".csv", mode="w") as report:
-        writer = csv.writer(
-            report, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-        )
-
-        writer.writerow(
-            [
-                "Media Type",
-                "Media",
-                "Caption Status",
-                "Media Location in Course",
-                "Meta Data",
-            ]
-        )
-
-        for media in vast.no_check:
-            writer.writerow(
-                [
-                    media["type"],
-                    media["media_loc"],
-                    "Manual check required",
-                    media["link_loc"],
-                ]
-            )
-
-        for media in vast.to_check:
-            caption_list = ", ".join(media["captions"])
-            meta_data = ", ".join(media["meta_data"])
-            writer.writerow(
-                [
-                    media["type"],
-                    media["media_loc"],
-                    caption_list,
-                    media["link_loc"],
-                    meta_data,
-                ]
-            )
-    click.echo("Analysis complete.")
-    return 0
+    try:
+        vast.write_report(output_path)
+        click.echo("Analysis complete.")
+        return 0
+    except IOError:
+        click.echo("Failed to write report")
+        return 1
 
 
 if __name__ == "__main__":
