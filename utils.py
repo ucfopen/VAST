@@ -10,7 +10,6 @@ def add_entry(
 ):
     """
     Adds an entry to the provided dictionary at the appropriate key.
-
     :param media_dict: The dictionary to add the entry to.
     :type media_dict: dict
     :param link_name: The name to identify a link by - usually the URL.
@@ -29,7 +28,6 @@ def add_entry(
     :type: str
     :param file_location: The full URL to the file in Canvas.
     :type: str
-
     :returns: None
     """
     media_dict.setdefault(link_name, [])
@@ -42,7 +40,6 @@ def process_contents(
 ):
     """
     Process the provided contents
-
     :param soup:
     :type soup: :class:`bs4.BeautifulSoup`
     :param course:
@@ -103,6 +100,10 @@ def process_contents(
         # Matches library media from lib_media_urls
         elif any(match_str in link for match_str in lib_media_urls):
             add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches New RCE Canvas Linked Videos
+        elif 'media_objects_iframe' in link:
+            add_entry(media_link, link, 'Manually Check for Captions', page_location)
+
 
     # Process IFrames
     iframe_list = []
@@ -122,6 +123,9 @@ def process_contents(
         # Matches library media from lib_media_urls
         elif any(match_str in link for match_str in lib_media_urls):
             add_entry(library_media, link, 'Manually Check for Captions', page_location)
+        # Matches New RCE Canvas Embedded Videos
+        elif 'media_objects_iframe' in link:
+            add_entry(media_link, link, 'Manually Check for Captions', page_location)
 
     # Process Videos
     for video in soup.find_all('video'):
@@ -136,7 +140,8 @@ def process_contents(
 
     # Process Canvas Embedded Video
     for embed in soup.find_all('source'):
-        media_type = embed.get('type')
+      #  media_type = embed.get('type')
+       #Legacy
         if media_type == 'video/mp4' in media_type:
             media_url = embed.get('src')
             m_link = 'Embedded Canvas Video {}'.format(media_url)
