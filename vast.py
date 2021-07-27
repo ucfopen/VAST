@@ -26,6 +26,34 @@ media_link = {}
 link_media = {}
 library_media = {}
 
+YOUTUBE_VIDEO_LENGTH_REGEX = re.compile(r"[0-9]+[HMS]{1}")
+YOUTUBE_TIMESTAMP_POSITION_MAP = {
+    "H": 1,
+    "M": 2,
+    "S": 3,
+}
+
+def get_youtube_video_length(response, youtube_link):
+    """
+    Determines the length of the youtube video from the metadata in response, and updates the information in youtube_link accordingly.
+
+    :param response: The reponse from the Youtube API.
+    :type reponse: requests.Response
+    :param youtube_link: The data structure holding information about the youtube video.
+    :type youtube_link: List
+    """
+    # Set initial values to zero
+    youtube_link.insert(1, '0')
+    youtube_link.insert(2, '0')
+    youtube_link.insert(3, '0')
+    # Get the video duration from the video metadata
+    duration = response.json()['items'][-1]['contentDetails']['duration']
+    # Extract the values for hours, mins, secs
+    timestamps = YOUTUBE_VIDEO_LENGTH_REGEX.findall(duration)
+    for timestamp in timestamps:
+        # Update the appropriate time value in the youtube_link
+        youtube_link[YOUTUBE_TIMESTAMP_POSITION_MAP[timestamp[-1]]] = timestamp[:-1]
+
 # Checks all pages in a canvas course for media links
 print('Checking Pages')
 pages = course.get_pages()
@@ -204,86 +232,20 @@ for key in youtube_link:
                     r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
                         google_video, item, youtube_key
                     ))
-                    data = r.json()
-                    for d in data['items']:
-                        duration = d['contentDetails']['duration']
-                        if 'H' in duration:
-                            hour, min_org = duration.split('H')
-                            minute, sec = min_org.split('M')
-                            youtube_link[key].insert(1, hour[2:])
-                            youtube_link[key].insert(2, minute)
-                            youtube_link[key].insert(3, sec[:-1])
-                        elif 'M' in duration:
-                            minute, sec = duration.split('M')
-                            if minute is None:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, '0')
-                                youtube_link[key].insert(3, sec[:-1])
-                            else:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, minute[2:])
-                                youtube_link[key].insert(3, sec[:-1])
-                        else:
-                            youtube_link[key].insert(1, '0')
-                            youtube_link[key].insert(2, '0')
-                            youtube_link[key].insert(3, duration[2:-1])
+                    get_youtube_video_length(r, youtube_link[key])
 
                 if is_english is False:
                     youtube_link[key].insert(0, 'No Captions in English')
                     r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
                         google_video, item, youtube_key
                     ))
-                    data = r.json()
-                    for d in data['items']:
-                        duration = d['contentDetails']['duration']
-                        if 'H' in duration:
-                            hour, min_org = duration.split('H')
-                            minute, sec = min_org.split('M')
-                            youtube_link[key].insert(1, hour[2:])
-                            youtube_link[key].insert(2, minute)
-                            youtube_link[key].insert(3, sec[:-1])
-                        elif 'M' in duration:
-                            minute, sec = duration.split('M')
-                            if minute is None:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, '0')
-                                youtube_link[key].insert(3, sec[:-1])
-                            else:
-                                youtube_link[key].insert(1, '0')
-                                youtube_link[key].insert(2, minute[2:])
-                                youtube_link[key].insert(3, sec[:-1])
-                        else:
-                            youtube_link[key].insert(1, '0')
-                            youtube_link[key].insert(2, '0')
-                            youtube_link[key].insert(3, duration[2:-1])
+                    get_youtube_video_length(r, youtube_link[key])
             else:
                 youtube_link[key].insert(0, 'No Captions')
                 r = requests.get('{}?part=contentDetails&id={}&key={}'.format(
                     google_video, item, youtube_key
                 ))
-                data = r.json()
-                for d in data['items']:
-                    duration = d['contentDetails']['duration']
-                    if 'H' in duration:
-                        hour, min_org = duration.split('H')
-                        min, sec = min_org.split('M')
-                        youtube_link[key].insert(1, hour[2:])
-                        youtube_link[key].insert(2, min)
-                        youtube_link[key].insert(3, sec[:-1])
-                    elif 'M' in duration:
-                        min, sec = duration.split('M')
-                        if min is None:
-                            youtube_link[key].insert(1, '0')
-                            youtube_link[key].insert(2, '0')
-                            youtube_link[key].insert(3, sec[:-1])
-                        else:
-                            youtube_link[key].insert(1, '0')
-                            youtube_link[key].insert(2, min[2:])
-                            youtube_link[key].insert(3, sec[:-1])
-                    else:
-                        youtube_link[key].insert(1, '0')
-                        youtube_link[key].insert(2, '0')
-                        youtube_link[key].insert(3, duration[2:-1])
+                get_youtube_video_length(r, youtube_link[key])
 
         except KeyError:
             youtube_link[key].insert(0, 'Unable to Check Youtube Video')
