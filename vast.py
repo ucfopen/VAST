@@ -54,23 +54,25 @@ def get_youtube_video_length(response, youtube_link):
         # Update the appropriate time value in the youtube_link
         youtube_link[YOUTUBE_TIMESTAMP_POSITION_MAP[timestamp[-1]]] = timestamp[:-1]
 
-def get_vimeo_video_length(response, video_id):
-    """
-    Determines the length of a Vimeo video from the video ID provides and updates the information in VAST report accordingly.
-
-    :param response: The response from the Vimeo Video API.
-    :type response: requests.Response
-    :param video_id: The ID of the Vimeo video.
-    :type video_id: int
-    """
-
-    # Parse the Vimeo URL to recieve the video_id
-
-    # Send a GET request to the api.vimeo.com/videos/{video_id} endpoint
-
-    # Receive the 'duration' field from the provided response
-
-    # Populate the appropriate column in the VAST report with seconds
+# def get_vimeo_video_length(response, vimeo_link):
+#     """
+#     Determines the length of a Vimeo video and updates the information in VAST report accordingly.
+#
+#     :param response: The response from the Vimeo Video API.
+#     :type response: requests.Response
+#     :param vimeo_link: The data structure holding information about the Vimeo video.
+#     :type vimeo_link: List
+#     """
+#
+#     # Send a GET request of the vimeo_link URL to the api.vimeo.com/videos?links={} endpoint
+#
+#     # Parse the 'video_id' field from the provided response
+#
+#     # Send a GET request to the api.vimeo.com/videos/{video_id} endpoint
+#
+#     # Parse the 'duration' field from the provided response
+#
+#     # Populate the appropriate column in the VAST report with seconds
 
 # Checks all pages in a canvas course for media links
 print('Checking Pages')
@@ -297,11 +299,11 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                hour, remainder = divmod(vimeo_duration, 3600)
-                minute, second = divmod(remainder, 60)
-                vimeo_link[link].insert(1, hour)
-                vimeo_link[link].insert(2, minute)
-                vimeo_link[link].insert(3, second)
+                # hour, remainder = divmod(vimeo_duration, 3600)
+                # minute, second = divmod(remainder, 60)
+                vimeo_link[link].insert(1, '')
+                vimeo_link[link].insert(2, '')
+                vimeo_link[link].insert(3, vimeo_duration)
             else:
                 for d in data['data']:
                     if d['language'] == 'en' or d['language'] == 'en-US':
@@ -317,9 +319,7 @@ for link in vimeo_link:
                     )
                     data = r.json()
                     vimeo_duration = data['duration']
-                    hour, remainder = divmod(vimeo_duration, 3600)
-                    minute, second = divmod(remainder, 60)
-                    vimeo_link[link] = ['No English Captions', hour, minute, second] + vimeo_link[link]
+                    vimeo_link[link] = ['No English Captions', '', '', vimeo_duration] + vimeo_link[link]
 
         except KeyError:
             vimeo_link[link] = ['Unable to Check Vimeo Video.', '', '', ''] + vimeo_link[link]
@@ -346,11 +346,11 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                hour, remainder = divmod(vimeo_duration, 3600)
-                minute, second = divmod(remainder, 60)
-                vimeo_link[link].insert(1, hour)
-                vimeo_link[link].insert(2, minute)
-                vimeo_link[link].insert(3, second)
+                # hour, remainder = divmod(vimeo_duration, 3600)
+                # minute, second = divmod(remainder, 60)
+                vimeo_link[link].insert(1, '')
+                vimeo_link[link].insert(2, '')
+                vimeo_link[link].insert(3, vimeo_duration)
             else:
                 for d in data['data']:
                     if d['language'] == 'en' or d['language'] == 'en-US':
@@ -370,11 +370,11 @@ for link in vimeo_link:
                     )
                     data = r.json()
                     vimeo_duration = data['duration']
-                    hour, remainder = divmod(vimeo_duration, 3600)
-                    minute, second = divmod(remainder, 60)
-                    vimeo_link[link].insert(1, hour)
-                    vimeo_link[link].insert(2, minute)
-                    vimeo_link[link].insert(3, second)
+                    # hour, remainder = divmod(vimeo_duration, 3600)
+                    # minute, second = divmod(remainder, 60)
+                    vimeo_link[link].insert(1, '')
+                    vimeo_link[link].insert(2, '')
+                    vimeo_link[link].insert(3, vimeo_duration)
         except KeyError:
             vimeo_link[link].insert(0, 'Unable to Check Vimeo Video')
             vimeo_link[link].insert(1, '')
