@@ -279,8 +279,6 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                # hour, remainder = divmod(vimeo_duration, 3600)
-                # minute, second = divmod(remainder, 60)
                 vimeo_link[link].insert(1, '')
                 vimeo_link[link].insert(2, '')
                 vimeo_link[link].insert(3, vimeo_duration)
@@ -326,8 +324,6 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                # hour, remainder = divmod(vimeo_duration, 3600)
-                # minute, second = divmod(remainder, 60)
                 vimeo_link[link].insert(1, '')
                 vimeo_link[link].insert(2, '')
                 vimeo_link[link].insert(3, vimeo_duration)
@@ -350,8 +346,6 @@ for link in vimeo_link:
                     )
                     data = r.json()
                     vimeo_duration = data['duration']
-                    # hour, remainder = divmod(vimeo_duration, 3600)
-                    # minute, second = divmod(remainder, 60)
                     vimeo_link[link].insert(1, '')
                     vimeo_link[link].insert(2, '')
                     vimeo_link[link].insert(3, vimeo_duration)
