@@ -54,6 +54,24 @@ def get_youtube_video_length(response, youtube_link):
         # Update the appropriate time value in the youtube_link
         youtube_link[YOUTUBE_TIMESTAMP_POSITION_MAP[timestamp[-1]]] = timestamp[:-1]
 
+def get_vimeo_video_length(response, video_id):
+    """
+    Determines the length of a Vimeo video from the video ID provides and updates the information in VAST report accordingly.
+
+    :param response: The response from the Vimeo Video API.
+    :type response: requests.Response
+    :param video_id: The ID of the Vimeo video.
+    :type video_id: int
+    """
+
+    # Parse the Vimeo URL to recieve the video_id
+
+    # Send a GET request to the api.vimeo.com/videos/{video_id} endpoint
+
+    # Receive the 'duration' field from the provided response
+
+    # Populate the appropriate column in the VAST report with seconds
+
 # Checks all pages in a canvas course for media links
 print('Checking Pages')
 pages = course.get_pages()
