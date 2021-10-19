@@ -333,6 +333,12 @@ for link in vimeo_link:
                         vimeo_captions.append('1')
                     else:
                         vimeo_captions.append('2')
+                r = requests.get(
+                    'https://api.vimeo.com/videos/{}'.format(video_id),
+                    headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
+                )
+                data = r.json()
+                vimeo_duration = data['duration']
                 if '1' in vimeo_captions:
                     vimeo_link[link].insert(0, 'Captions in English')
                     vimeo_link[link].insert(1, '')
@@ -340,12 +346,6 @@ for link in vimeo_link:
                     vimeo_link[link].insert(3, '')
                 else:
                     vimeo_link[link].insert(0, 'No English Captions')
-                    r = requests.get(
-                        'https://api.vimeo.com/videos/{}'.format(video_id),
-                        headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
-                    )
-                    data = r.json()
-                    vimeo_duration = data['duration']
                     vimeo_link[link].insert(1, '')
                     vimeo_link[link].insert(2, '')
                     vimeo_link[link].insert(3, vimeo_duration)
