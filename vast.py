@@ -279,29 +279,25 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                hour, remainder = divmod(vimeo_duration, 3600)
-                minute, second = divmod(remainder, 60)
-                vimeo_link[link].insert(1, hour)
-                vimeo_link[link].insert(2, minute)
-                vimeo_link[link].insert(3, second)
+                vimeo_link[link].insert(1, '')
+                vimeo_link[link].insert(2, '')
+                vimeo_link[link].insert(3, vimeo_duration)
             else:
                 for d in data['data']:
                     if d['language'] == 'en' or d['language'] == 'en-US':
                         vimeo_captions.append('1')
                     else:
                         vimeo_captions.append('2')
+                r = requests.get(
+                    'https://api.vimeo.com/videos/{}'.format(video_id),
+                    headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
+                )
+                data = r.json()
+                vimeo_duration = data['duration']
                 if '1' in vimeo_captions:
-                    vimeo_link[link] = ['Captions in English', '', '', ''] + vimeo_link[link]
+                    vimeo_link[link] = ['Captions in English', '', '', vimeo_duration] + vimeo_link[link]
                 else:
-                    r = requests.get(
-                        'https://api.vimeo.com/videos/{}'.format(video_id),
-                        headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
-                    )
-                    data = r.json()
-                    vimeo_duration = data['duration']
-                    hour, remainder = divmod(vimeo_duration, 3600)
-                    minute, second = divmod(remainder, 60)
-                    vimeo_link[link] = ['No English Captions', hour, minute, second] + vimeo_link[link]
+                    vimeo_link[link] = ['No English Captions', '', '', vimeo_duration] + vimeo_link[link]
 
         except KeyError:
             vimeo_link[link] = ['Unable to Check Vimeo Video.', '', '', ''] + vimeo_link[link]
@@ -328,17 +324,21 @@ for link in vimeo_link:
                 )
                 data = r.json()
                 vimeo_duration = data['duration']
-                hour, remainder = divmod(vimeo_duration, 3600)
-                minute, second = divmod(remainder, 60)
-                vimeo_link[link].insert(1, hour)
-                vimeo_link[link].insert(2, minute)
-                vimeo_link[link].insert(3, second)
+                vimeo_link[link].insert(1, '')
+                vimeo_link[link].insert(2, '')
+                vimeo_link[link].insert(3, vimeo_duration)
             else:
                 for d in data['data']:
                     if d['language'] == 'en' or d['language'] == 'en-US':
                         vimeo_captions.append('1')
                     else:
                         vimeo_captions.append('2')
+                r = requests.get(
+                    'https://api.vimeo.com/videos/{}'.format(video_id),
+                    headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
+                )
+                data = r.json()
+                vimeo_duration = data['duration']
                 if '1' in vimeo_captions:
                     vimeo_link[link].insert(0, 'Captions in English')
                     vimeo_link[link].insert(1, '')
@@ -346,17 +346,9 @@ for link in vimeo_link:
                     vimeo_link[link].insert(3, '')
                 else:
                     vimeo_link[link].insert(0, 'No English Captions')
-                    r = requests.get(
-                        'https://api.vimeo.com/videos/{}'.format(video_id),
-                        headers={'Authorization': 'Bearer {}'.format(vimeo_api_key)}
-                    )
-                    data = r.json()
-                    vimeo_duration = data['duration']
-                    hour, remainder = divmod(vimeo_duration, 3600)
-                    minute, second = divmod(remainder, 60)
-                    vimeo_link[link].insert(1, hour)
-                    vimeo_link[link].insert(2, minute)
-                    vimeo_link[link].insert(3, second)
+                    vimeo_link[link].insert(1, '')
+                    vimeo_link[link].insert(2, '')
+                    vimeo_link[link].insert(3, vimeo_duration)
         except KeyError:
             vimeo_link[link].insert(0, 'Unable to Check Vimeo Video')
             vimeo_link[link].insert(1, '')
