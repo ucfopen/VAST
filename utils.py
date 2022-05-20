@@ -101,8 +101,16 @@ def process_contents(
         elif any(match_str in link for match_str in lib_media_urls):
             add_entry(library_media, link, 'Manually Check for Captions', page_location)
         # Matches New RCE Canvas Linked Videos
-        elif 'media_objects_iframe' in link:
-            add_entry(media_link, link, 'Manually Check for Captions', page_location)
+        elif 'media_objects' in link:
+            #checks RCE Canvas videos for caption track
+            media_object_video = requests.get(link)
+            page_html = media_object_video.text
+            if '"kind":"subtitles"' and '"locale":"en"'in page_html:
+                add_entry(media_link, link, 'Captions in English', page_location)
+            elif '"kind":"subtitles"' in page_html:
+                add_entry(media_link, link, 'No English Captions', page_location)
+            else:
+                add_entry(media_link, link, 'No Captions', page_location)
 
 
     # Process IFrames
@@ -125,7 +133,15 @@ def process_contents(
             add_entry(library_media, link, 'Manually Check for Captions', page_location)
         # Matches New RCE Canvas Embedded Videos
         elif 'media_objects_iframe' in link:
-            add_entry(media_link, link, 'Manually Check for Captions', page_location)
+         #checks RCE Canvas videos for caption track
+            media_object_video = requests.get(link)
+            page_html = media_object_video.text
+            if '"kind":"subtitles"' and '"locale":"en"'in page_html:
+                add_entry(media_link, link, 'Captions in English', page_location)
+            elif '"kind":"subtitles"' in page_html:
+                add_entry(media_link, link, 'No English Captions', page_location)
+            else:
+                add_entry(media_link, link, 'No Captions', page_location)
 
     # Process Videos
     for video in soup.find_all('video'):
