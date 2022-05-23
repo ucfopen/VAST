@@ -1,5 +1,6 @@
 from __future__ import print_function
 import re
+import requests
 
 from vast_config import youtube_pattern, lib_media_urls
 
@@ -102,15 +103,16 @@ def process_contents(
             add_entry(library_media, link, 'Manually Check for Captions', page_location)
         # Matches New RCE Canvas Linked Videos
         elif 'media_objects' in link:
-            #checks RCE Canvas videos for caption track
             media_object_video = requests.get(link)
             page_html = media_object_video.text
-            if '"kind":"subtitles"' and '"locale":"en"'in page_html:
-                add_entry(media_link, link, 'Captions in English', page_location)
-            elif '"kind":"subtitles"' in page_html:
-                add_entry(media_link, link, 'No English Captions', page_location)
+            if '"kind":"subtitles"' in page_html:
+                if '"locale":"en"'in page_html:
+                    message = 'Captions in English'
+                else:
+                    message = 'No English Captions'
             else:
-                add_entry(media_link, link, 'No Captions', page_location)
+                message = 'No Captions'
+            add_entry(media_link, link, message, page_location)
 
 
     # Process IFrames
@@ -136,12 +138,14 @@ def process_contents(
          #checks RCE Canvas videos for caption track
             media_object_video = requests.get(link)
             page_html = media_object_video.text
-            if '"kind":"subtitles"' and '"locale":"en"'in page_html:
-                add_entry(media_link, link, 'Captions in English', page_location)
-            elif '"kind":"subtitles"' in page_html:
-                add_entry(media_link, link, 'No English Captions', page_location)
+            if '"kind":"subtitles"' in page_html:
+                if '"locale":"en"'in page_html:
+                    message = 'Captions in English'
+                else:
+                    message = 'No English Captions'
             else:
-                add_entry(media_link, link, 'No Captions', page_location)
+                message = 'No Captions'
+            add_entry(media_link, link, message, page_location)
 
     # Process Videos
     for video in soup.find_all('video'):
